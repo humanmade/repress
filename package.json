@@ -13,7 +13,8 @@
 		"redux-thunk": "2.x"
 	},
 	"dependencies": {
-		"lodash": "^4.17.5"
+		"lodash": "^4.17.5",
+		"qs": "^6.5.1"
 	},
 	"devDependencies": {
 		"babel-core": "^6.26.0",
