@@ -1,0 +1,18 @@
+{
+	"name": "repress",
+	"version": "0.1.0",
+	"description": "Connect your Redux store to the WordPress REST API.",
+	"main": "src/index.js",
+	"repository": "git@github.com:humanmade/repress.git",
+	"author": "Ryan McCue <ryan@humanmade.com>",
+	"license": "ISC",
+	"peerDependencies": {
+		"react": ">= 15",
+		"react-redux": "4.x || 5.x",
+		"redux": "3.x",
+		"redux-thunk": "2.x"
+	},
+	"dependencies": {
+		"lodash": "^4.17.5"
+	}
+}
