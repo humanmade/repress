@@ -13,7 +13,7 @@ export default ( handler, getSubstate, id ) => Component => {
 		}
 
 		componentWillReceiveProps( nextProps ) {
-			if ( this.props.archiveId !== nextProps.archiveId ) {
+			if ( ! nextProps.posts && this.props.archiveId !== nextProps.archiveId ) {
 				nextProps.onLoad();
 			}
 		}
