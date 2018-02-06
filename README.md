@@ -5,7 +5,7 @@
 			Connect your Redux store to the WordPress REST API.
 		</td>
 		<td align="right" width="20%">
-			<a href="https://npm.com/@humanmade/repress"><img src="https://img.shields.io/npm/v/@humanmade/repress.svg" /></a>
+			<a href="https://www.npmjs.com/package/@humanmade/repress"><img src="https://img.shields.io/npm/v/@humanmade/repress.svg" /></a>
 		</td>
 	</tr>
 	<tr>
