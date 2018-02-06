@@ -63,6 +63,7 @@ export default withArchive(
 
 `withArchive` components will automatically load the archive if it's not available in the store. Your component receives three props:
 
+* `archiveId` (mixed): The (resolved) ID for this archive.
 * `posts` (`object[]`): A list of objects in the archive.
 * `loading` (`boolean`): Whether the archive is currently being loaded.
 * `onLoad` (`Function`): Loader function. Called automatically by the HOC, but you can call this again if needed.
@@ -90,6 +91,8 @@ export default withArchive(
 	props => normalizePath( props.match.path )
 )( TodayArchive );
 ```
+
+(The resolved ID will be passed to your component as `archiveId`.)
 
 
 ## Pagination

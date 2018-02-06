@@ -12,6 +12,12 @@ export default ( handler, getSubstate, id ) => Component => {
 			}
 		}
 
+		componentWillReceiveProps( nextProps ) {
+			if ( this.props.archiveId !== nextProps.archiveId ) {
+				nextProps.onLoad();
+			}
+		}
+
 		render() {
 			return <Component { ...this.props } />;
 		}
@@ -23,6 +29,7 @@ export default ( handler, getSubstate, id ) => Component => {
 		const posts = handler.getArchive( substate, resolvedId );
 
 		return {
+			archiveId: resolvedId,
 			posts,
 			loading: handler.isArchiveLoading( substate, resolvedId ),
 			hasMore: handler.hasMore( substate, resolvedId ),
