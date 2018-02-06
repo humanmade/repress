@@ -1,6 +1,6 @@
 {
 	"name": "@humanmade/repress",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "Connect your Redux store to the WordPress REST API.",
 	"main": "dist/index.js",
 	"repository": "git@github.com:humanmade/repress.git",
@@ -27,5 +27,7 @@
 		"build": "webpack",
 		"prepublish": "webpack"
 	},
-	"files": []
+	"files": [
+		"dist/index.js"
+	]
 }
