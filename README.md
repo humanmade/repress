@@ -123,6 +123,8 @@ export default connect( mapStateToProps )( Post );
 
 ## About
 
+Copyright Human Made. Licensed under the [ISC License](LICENSE.md).
+
 ### Roadmap
 
 * Add delete actions
