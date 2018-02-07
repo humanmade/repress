@@ -91,4 +91,4 @@ export default ( state, action ) => {
 }
 ```
 
-Note that you should always
+Note that you should always deduplicate posts when merging, as duplicate posts in your store may lead to inconsistent behaviour. The `mergePosts` helper can handle this for you.
