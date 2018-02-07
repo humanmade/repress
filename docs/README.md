@@ -10,3 +10,4 @@ The following topics aren't needed for most people, but are handy if you're work
 
 * [Internals](internals.md)
 * [Hydration](hydration.md)
+* [Advanced Uses](advanced.md) - Custom reducers and altering the internal state.
