@@ -17,7 +17,8 @@ To get started, add the npm package to your project:
 
 ```sh
 npm install --save @humanmade/repress
-// Or, if using Yarn:
+
+# Or, if using Yarn:
 yarn add @humanmade/repress
 ```
 
