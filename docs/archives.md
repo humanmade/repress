@@ -61,7 +61,7 @@ export default withArchive(
 )( TodayArchive );
 ```
 
-`withArchive` components will automatically load the archive if it's not available in the store. Your component receives three props:
+`withArchive` components will automatically load the archive if it's not available in the store. Your component receives seven props:
 
 * `archiveId` (mixed): The (resolved) ID for this archive.
 * `posts` (`object[]`): A list of objects in the archive.
