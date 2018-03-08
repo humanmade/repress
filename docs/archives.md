@@ -36,7 +36,7 @@ You can use the `withArchive` HOC to access your data in your components:
 
 ```js
 // TodayArchive.js
-import withArchive from '@humanmade/repress';
+import { withArchive } from '@humanmade/repress';
 import React from 'react';
 
 import { posts } from './types';
@@ -61,15 +61,15 @@ export default withArchive(
 )( TodayArchive );
 ```
 
-`withArchive` components will automatically load the archive if it's not available in the store. Your component receives three props:
+`withArchive` components will automatically load the archive if it's not available in the store. Your component receives seven props:
 
 * `archiveId` (mixed): The (resolved) ID for this archive.
 * `posts` (`object[]`): A list of objects in the archive.
 * `loading` (`boolean`): Whether the archive is currently being loaded.
-* `onLoad` (`Function`): Loader function. Called automatically by the HOC, but you can call this again if needed.
+* `onLoad` (`Function`: `() => Promise`): Loader function. Called automatically by the HOC, but you can call this again if needed.
 * `hasMore` (`boolean`): Whether there are more pages of the archive to load.
 * `loadingMore` (`boolean`): Whether the next page of the archive is being loaded.
-* `onLoadMore` (`Function`): Loader function. Call this to load the next page of the archive.
+* `onLoadMore` (`Function`: `( page = null ) => Promise`): Loader function. Call this to load the next page of the archive, or pass a page number to load that specific page.
 
 For convenience, you might want to make your own HOC to simplify this to just an ID:
 
