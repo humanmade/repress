@@ -118,3 +118,11 @@ export default withSingle(
 ## About
 
 Copyright Human Made. Licensed under the [ISC License](LICENSE.md).
+
+## Credits
+
+Created by Human Made to make building React apps with the WordPress REST API even easier. Repress is built using what we've learnt building and scaling React sites. [Hire us to work with you!](https://humanmade.com/)
+
+Written and maintained by [Ryan McCue](https://github.com/rmccue).
+
+Interested in joining in on the fun? [Join us, and become human!](https://humanmade.com/hiring/)
