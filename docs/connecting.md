@@ -3,7 +3,7 @@
 Once your handlers are set up and connected to the store, you'll want to work with that data. To do this, you can either use the helper components, or hook the component up to the store yourself.
 
 
-## withArchive
+## withSingle
 
 The easiest way to do this is to use the `withSingle` higher-order component. This works similiarly to the `connect` HOC from Redux, but provides just the post data and helpers.
 
