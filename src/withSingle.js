@@ -38,6 +38,7 @@ export default ( handler, getSubstate, mapPropsToId ) => Component => {
 		const resolvedId = resolve( mapPropsToId, props );
 		return {
 			onLoad: ( context = 'view' ) => dispatch( handler.fetchSingle( resolvedId, context ) ),
+			onUpdatePost: data => dispatch( handler.updateSingle( { id: resolvedId, ...data } ) ),
 		};
 	};
 
