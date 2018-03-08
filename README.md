@@ -89,16 +89,6 @@ posts.registerArchive( 'home', {} );
 ```
 
 ```js
-// actions.js
-
-import { posts } from './types';
-
-export const getPost = posts.fetchSingle;
-export const getPostArchive = posts.fetchArchive;
-export const getFrontPage = () => posts.fetchArchive( 'home' );
-```
-
-```js
 // reducer.js
 import { combineReducers } from 'redux';
 
@@ -112,12 +102,12 @@ export default combineReducers( {
 } );
 ```
 
-In your connected components, you can use the helpers to pull out data from the substate easily:
+In your connected components, you can use the higher-order components ([withSingle](docs/connecting.md) and [withArchive](docs/archives.md)) to pull out data from the substate easily:
 
 ```js
 // Post.js
+import { withSingle } from '@humanmade/repress';
 import React from 'react';
-import { connect } from 'react-redux';
 
 import { posts } from './types';
 
@@ -125,14 +115,18 @@ const Post = props => <div>
 	<h1>{ props.post.title.rendered }</h1>
 </div>;
 
-const mapStateToProps = ( state, props ) => {
-	return {
-		// Pass the substate when pulling out data.
-		post: posts.getSingle( state.posts, props.id ),
-	};
-};
+export default withSingle(
+	// Handler object:
+	posts,
 
-export default connect( mapStateToProps )( Post );
+	// getSubstate() - returns the substate
+	state => state.posts,
+
+	// mapPropsToId - resolve the props to the post ID
+	props => props.id
+)( Post );
+
+// Then just use <Post id={ 42 } /> !
 ```
 
 
