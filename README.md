@@ -118,8 +118,3 @@ export default withSingle(
 ## About
 
 Copyright Human Made. Licensed under the [ISC License](LICENSE.md).
-
-### Roadmap
-
-* Add delete actions
-* Add pagination support for archives
