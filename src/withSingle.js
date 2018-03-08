@@ -29,16 +29,16 @@ export default ( handler, getSubstate, mapPropsToId ) => Component => {
 
 		return {
 			post,
-			postId: resolvedId,
+			postId:  resolvedId,
 			loading: handler.isPostLoading( substate, resolvedId ),
-			saving: handler.isPostSaving( substate, resolvedId ),
+			saving:  handler.isPostSaving( substate, resolvedId ),
 		};
 	};
 
 	const mapDispatchToProps = ( dispatch, props ) => {
 		const resolvedId = resolve( mapPropsToId, props );
 		return {
-			onLoad: ( context = 'view' ) => dispatch( handler.fetchSingle( resolvedId, context ) ),
+			onLoad:       ( context = 'view' ) => dispatch( handler.fetchSingle( resolvedId, context ) ),
 			onUpdatePost: data => dispatch( handler.updateSingle( { id: resolvedId, ...data } ) ),
 		};
 	};
