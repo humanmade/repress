@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import { resolve } from './utilities';
 
-export default ( handler, getSubstate, id ) => Component => {
+export default ( handler, getSubstate, mapPropsToId ) => Component => {
 	class WrappedComponent extends React.Component {
 		componentWillMount() {
 			if ( ! this.props.posts && ! this.props.loading ) {
@@ -12,7 +12,7 @@ export default ( handler, getSubstate, id ) => Component => {
 		}
 
 		componentWillReceiveProps( nextProps ) {
-			if ( ! nextProps.posts && this.props.archiveId !== nextProps.archiveId ) {
+			if ( ! nextProps.posts && this.props.postId !== nextProps.postId ) {
 				nextProps.onLoad();
 			}
 		}
@@ -24,23 +24,22 @@ export default ( handler, getSubstate, id ) => Component => {
 
 	const mapStateToProps = ( state, props ) => {
 		const substate = getSubstate( state );
-		const resolvedId = resolve( id, props );
-		const posts = handler.getArchive( substate, resolvedId );
+		const resolvedId = resolve( mapPropsToId, props );
+		const post = handler.getSingle( substate, resolvedId );
 
 		return {
-			archiveId: resolvedId,
-			posts,
-			loading: handler.isArchiveLoading( substate, resolvedId ),
-			hasMore: handler.hasMore( substate, resolvedId ),
-			loadingMore: handler.isLoadingMore( substate, resolvedId ),
+			post,
+			postId:  resolvedId,
+			loading: handler.isPostLoading( substate, resolvedId ),
+			saving:  handler.isPostSaving( substate, resolvedId ),
 		};
 	};
 
 	const mapDispatchToProps = ( dispatch, props ) => {
-		const resolvedId = resolve( id, props );
+		const resolvedId = resolve( mapPropsToId, props );
 		return {
-			onLoad:     () => dispatch( handler.fetchArchive( resolvedId ) ),
-			onLoadMore: page => dispatch( handler.fetchMore( getSubstate, resolvedId, page ) ),
+			onLoad:       ( context = 'view' ) => dispatch( handler.fetchSingle( resolvedId, context ) ),
+			onUpdatePost: data => dispatch( handler.updateSingle( { id: resolvedId, ...data } ) ),
 		};
 	};
 
