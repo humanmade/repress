@@ -6,14 +6,14 @@ import { parseResponse, mergePosts } from './utilities';
 const fetchOptions = { credentials: 'include' };
 
 const DEFAULT_STATE = {
-	_initialized: true,
-	archives: {},
-	archivePages: {},
-	loadingPost: false,
+	_initialized:   true,
+	archives:       {},
+	archivePages:   {},
+	loadingPost:    false,
 	loadingArchive: false,
-	loadingMore: false,
-	posts: [],
-	saving: false,
+	loadingMore:    false,
+	posts:          [],
+	saving:         false,
 };
 
 export default class Handler {
@@ -279,9 +279,9 @@ export default class Handler {
 		dispatch( { type: this.actions.updateStart, id, data } );
 
 		const options = {
-			method: 'PUT',
+			method:  'PUT',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify( data ),
+			body:    JSON.stringify( data ),
 		};
 		return this.fetch( `${ this.url }/${ id }`, { context: 'edit' }, options )
 			.then( data => {
@@ -322,9 +322,9 @@ export default class Handler {
 		dispatch( { type: this.actions.createStart, id, data } );
 
 		const options = {
-			method: 'POST',
+			method:  'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify( data ),
+			body:    JSON.stringify( data ),
 		};
 		return this.fetch( this.url, { context: 'edit' }, options )
 			.then( data => {
