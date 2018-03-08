@@ -28,10 +28,10 @@ export default ( handler, getSubstate, id ) => Component => {
 		const posts = handler.getArchive( substate, resolvedId );
 
 		return {
-			archiveId: resolvedId,
+			archiveId:   resolvedId,
 			posts,
-			loading: handler.isArchiveLoading( substate, resolvedId ),
-			hasMore: handler.hasMore( substate, resolvedId ),
+			loading:     handler.isArchiveLoading( substate, resolvedId ),
+			hasMore:     handler.hasMore( substate, resolvedId ),
 			loadingMore: handler.isLoadingMore( substate, resolvedId ),
 		};
 	};
