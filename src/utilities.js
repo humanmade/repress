@@ -1,3 +1,7 @@
+import { isFunction } from 'lodash/lang';
+
+export const resolve = ( maybeFunc, ...args ) => isFunction( maybeFunc ) ? maybeFunc( ...args ) : maybeFunc;
+
 export const parseResponse = resp => {
 	return resp.json().then( data => {
 		if ( resp.ok ) {

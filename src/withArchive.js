@@ -1,8 +1,7 @@
-import { isFunction } from 'lodash/lang';
 import React from 'react';
 import { connect } from 'react-redux';
 
-const resolve = ( maybeFunc, ...args ) => isFunction( maybeFunc ) ? maybeFunc( ...args ) : maybeFunc;
+import { resolve } from './utilities';
 
 export default ( handler, getSubstate, id ) => Component => {
 	class WrappedComponent extends React.Component {
