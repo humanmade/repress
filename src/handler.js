@@ -374,7 +374,7 @@ export default class Handler {
 				return {
 					...state,
 					loadingArchive: false,
-					archives: {
+					archives:       {
 						...state.archives,
 						[ action.id ]: ids,
 					},
@@ -383,7 +383,7 @@ export default class Handler {
 						[ action.id ]: {
 							current: 1,
 							total:   action.pages,
-						}
+						},
 					},
 					posts: mergePosts( state.posts, action.results ),
 				};
@@ -408,7 +408,7 @@ export default class Handler {
 				return {
 					...state,
 					loadingMore: false,
-					archives: {
+					archives:    {
 						...state.archives,
 						[ action.id ]: [
 							...currentIds,
@@ -443,7 +443,7 @@ export default class Handler {
 				return {
 					...state,
 					loadingPost: false,
-					posts: mergePosts( state.posts, [ action.data ] ),
+					posts:       mergePosts( state.posts, [ action.data ] ),
 				};
 			}
 
@@ -465,7 +465,7 @@ export default class Handler {
 				return {
 					...state,
 					saving: false,
-					posts: mergePosts( state.posts, [ action.data ] ),
+					posts:  mergePosts( state.posts, [ action.data ] ),
 				};
 
 			case this.actions.createError:
