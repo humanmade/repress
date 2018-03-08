@@ -104,7 +104,6 @@ export default class Handler {
 				return id;
 			} )
 			.catch( error => {
-				console.log( error );
 				dispatch( { type: this.actions.archiveError, id, error } );
 
 				// Rethrow for other promise handlers.
@@ -230,7 +229,6 @@ export default class Handler {
 				return id;
 			} )
 			.catch( error => {
-				console.log( error );
 				dispatch( { type: this.actions.getError, id, error } );
 
 				// Rethrow for other promise handlers.
@@ -291,7 +289,6 @@ export default class Handler {
 				return id;
 			} )
 			.catch( error => {
-				console.log( error );
 				dispatch( { type: this.actions.updateError, id, error } );
 
 				// Rethrow for other promise handlers.
@@ -335,7 +332,6 @@ export default class Handler {
 				return data.id;
 			} )
 			.catch( error => {
-				console.log( error );
 				dispatch( { type: this.actions.createError, id, error } );
 
 				// Rethrow for other promise handlers.
