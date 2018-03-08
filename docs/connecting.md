@@ -16,7 +16,7 @@ import React from 'react';
 
 import { posts } from './types';
 
-const TodayArchive = props => <article>
+const SinglePost = props => <article>
 	<h1>{ props.post.title.rendered }</h1>
 	<p>Posted { props.post.date_gmt }</p>
 	<div
