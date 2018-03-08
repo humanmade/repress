@@ -36,7 +36,7 @@ You can use the `withArchive` HOC to access your data in your components:
 
 ```js
 // TodayArchive.js
-import withArchive from '@humanmade/repress';
+import { withArchive } from '@humanmade/repress';
 import React from 'react';
 
 import { posts } from './types';
