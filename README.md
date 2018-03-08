@@ -29,7 +29,7 @@ Keep reading for a simple introduction, or dive into [the documentation](docs/RE
 
 Repress is [available on npm](https://www.npmjs.com/package/@humanmade/repress), simply add it to your project to get started:
 
-```js
+```sh
 npm install --save @humanmade/repress
 
 # Or, if you're using Yarn
