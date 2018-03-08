@@ -3,19 +3,17 @@ import qs from 'qs';
 
 import { parseResponse, mergePosts } from './utilities';
 
-const fetchOptions = {
-	credentials: 'include',
-};
+const fetchOptions = { credentials: 'include' };
 
 const DEFAULT_STATE = {
-	_initialized: true,
-	archives: {},
-	archivePages: {},
-	loadingPost: false,
+	_initialized:   true,
+	archives:       {},
+	archivePages:   {},
+	loadingPost:    false,
 	loadingArchive: false,
-	loadingMore: false,
-	posts: [],
-	saving: false,
+	loadingMore:    false,
+	posts:          [],
+	saving:         false,
 };
 
 export default class Handler {
@@ -90,6 +88,7 @@ export default class Handler {
 	 * @param {mixed} id Archive key.
 	 * @return {Function} Action to dispatch.
 	 */
+	// eslint-disable-next-line no-undef
 	fetchArchive = id => ( dispatch, getState ) => {
 		if ( ! ( id in this.archives ) ) {
 			throw new Error( `Invalid archive ID: ${ id }` );
@@ -106,7 +105,6 @@ export default class Handler {
 				return id;
 			} )
 			.catch( error => {
-				console.log( error );
 				dispatch( { type: this.actions.archiveError, id, error } );
 
 				// Rethrow for other promise handlers.
@@ -174,6 +172,7 @@ export default class Handler {
 	 * @param {Number} page Page to load. Uses next page if not manually supplied.
 	 * @return {[type]} [description]
 	 */
+	// eslint-disable-next-line no-undef
 	fetchMore = ( getSubstate, id, page = null ) => ( dispatch, getState ) => {
 		if ( ! ( id in this.archives ) ) {
 			throw new Error( `Invalid archive ID: ${ id }` );
@@ -223,6 +222,7 @@ export default class Handler {
 	 * @param {String} context Context to fetch.
 	 * @return {Function} Action to dispatch.
 	 */
+	// eslint-disable-next-line no-undef
 	fetchSingle = ( id, context = 'view' ) => dispatch => {
 		dispatch( { type: this.actions.getStart, id } );
 
@@ -232,7 +232,6 @@ export default class Handler {
 				return id;
 			} )
 			.catch( error => {
-				console.log( error );
 				dispatch( { type: this.actions.getError, id, error } );
 
 				// Rethrow for other promise handlers.
@@ -274,6 +273,7 @@ export default class Handler {
 	 * @param {object} data Post object to update. Must have `id` property.
 	 * @return {Function} Action to dispatch.
 	 */
+	// eslint-disable-next-line no-undef
 	updateSingle = data => dispatch => {
 		const { id } = data;
 		if ( ! id ) {
@@ -283,11 +283,9 @@ export default class Handler {
 		dispatch( { type: this.actions.updateStart, id, data } );
 
 		const options = {
-			method: 'PUT',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify( data ),
+			method:  'PUT',
+			headers: { 'Content-Type': 'application/json' },
+			body:    JSON.stringify( data ),
 		};
 		return this.fetch( `${ this.url }/${ id }`, { context: 'edit' }, options )
 			.then( data => {
@@ -295,7 +293,6 @@ export default class Handler {
 				return id;
 			} )
 			.catch( error => {
-				console.log( error );
 				dispatch( { type: this.actions.updateError, id, error } );
 
 				// Rethrow for other promise handlers.
@@ -322,6 +319,7 @@ export default class Handler {
 	 * @param {object} data Post data.
 	 * @return {Function} Action to dispatch.
 	 */
+	// eslint-disable-next-line no-undef
 	createSingle = data => dispatch => {
 		// Create temporary ID to allow tracking request.
 		const id = '_tmp_' + this.tempId++;
@@ -329,11 +327,9 @@ export default class Handler {
 		dispatch( { type: this.actions.createStart, id, data } );
 
 		const options = {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify( data ),
+			method:  'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body:    JSON.stringify( data ),
 		};
 		return this.fetch( this.url, { context: 'edit' }, options )
 			.then( data => {
@@ -341,7 +337,6 @@ export default class Handler {
 				return data.id;
 			} )
 			.catch( error => {
-				console.log( error );
 				dispatch( { type: this.actions.createError, id, error } );
 
 				// Rethrow for other promise handlers.
@@ -370,6 +365,7 @@ export default class Handler {
 	 * @param {object} action Action being dispatched.
 	 * @return {object} Reduced state.
 	 */
+	// eslint-disable-next-line no-undef
 	reducer = ( state = DEFAULT_STATE, action ) => {
 		switch ( action.type ) {
 			// Archive actions.
@@ -384,7 +380,7 @@ export default class Handler {
 				return {
 					...state,
 					loadingArchive: false,
-					archives: {
+					archives:       {
 						...state.archives,
 						[ action.id ]: ids,
 					},
@@ -393,7 +389,7 @@ export default class Handler {
 						[ action.id ]: {
 							current: 1,
 							total:   action.pages,
-						}
+						},
 					},
 					posts: mergePosts( state.posts, action.results ),
 				};
@@ -418,7 +414,7 @@ export default class Handler {
 				return {
 					...state,
 					loadingMore: false,
-					archives: {
+					archives:    {
 						...state.archives,
 						[ action.id ]: [
 							...currentIds,
@@ -453,7 +449,7 @@ export default class Handler {
 				return {
 					...state,
 					loadingPost: false,
-					posts: mergePosts( state.posts, [ action.data ] ),
+					posts:       mergePosts( state.posts, [ action.data ] ),
 				};
 			}
 
@@ -475,7 +471,7 @@ export default class Handler {
 				return {
 					...state,
 					saving: false,
-					posts: mergePosts( state.posts, [ action.data ] ),
+					posts:  mergePosts( state.posts, [ action.data ] ),
 				};
 
 			case this.actions.createError:
