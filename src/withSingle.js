@@ -31,6 +31,7 @@ export default ( handler, getSubstate, mapPropsToId ) => Component => {
 			post,
 			postId: resolvedId,
 			loading: handler.isPostLoading( substate, resolvedId ),
+			saving: handler.isPostSaving( substate, resolvedId ),
 		};
 	};
 
