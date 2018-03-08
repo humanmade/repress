@@ -67,21 +67,6 @@ export const posts = new handler( {
 
 	// `url` (required): base URL for the type.
 	url:   window.wpApiSettings.url + 'wp/v2/posts',
-
-	// `nonce`: REST API nonce. Only required if you want to write data.
-	nonce: window.wpApiSettings.nonce,
-
-	// `fetchOptions`: default options to pass to fetch().
-	// fetchOptions: { credentials: 'include' },
-
-	// `query`: default query arguments to include in every request.
-	// query: {},
-
-	// `rethrow`: Should we rethrow API errors after dispatching the action? See Actions below.
-	// rethrow: true,
-
-	// `actions`: action overrides. See Internals below.
-	// actions: {},
 } );
 
 // Register any static archives up-front.
