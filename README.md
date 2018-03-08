@@ -24,6 +24,21 @@ Repress requires Redux and [Redux Thunk](https://github.com/gaearon/redux-thunk)
 
 Keep reading for a simple introduction, or dive into [the documentation](docs/README.md).
 
+
+## Installation
+
+Repress is [available on npm](https://www.npmjs.com/package/@humanmade/repress), simply add it to your project to get started:
+
+```js
+npm install --save @humanmade/repress
+
+# Or, if you're using Yarn
+yarn add @humanmade/repress
+```
+
+You'll then need to [connect it to your store](docs/start.md).
+
+
 ## The Basics
 
 This library is a reusable tool that you can gradually add to your codebase. You simply create "handlers" for every top-level object (posts or CPTs, comments, terms, and users) you'd like to keep in your Redux store, and the handler takes care of dispatching.
