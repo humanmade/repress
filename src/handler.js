@@ -3,9 +3,7 @@ import qs from 'qs';
 
 import { parseResponse, mergePosts } from './utilities';
 
-const fetchOptions = {
-	credentials: 'include',
-};
+const fetchOptions = { credentials: 'include' };
 
 const DEFAULT_STATE = {
 	_initialized: true,
@@ -284,9 +282,7 @@ export default class Handler {
 
 		const options = {
 			method: 'PUT',
-			headers: {
-				'Content-Type': 'application/json',
-			},
+			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify( data ),
 		};
 		return this.fetch( `${ this.url }/${ id }`, { context: 'edit' }, options )
@@ -330,9 +326,7 @@ export default class Handler {
 
 		const options = {
 			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
+			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify( data ),
 		};
 		return this.fetch( this.url, { context: 'edit' }, options )
