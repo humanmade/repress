@@ -88,6 +88,7 @@ export default class Handler {
 	 * @param {mixed} id Archive key.
 	 * @return {Function} Action to dispatch.
 	 */
+	// eslint-disable-next-line no-undef
 	fetchArchive = id => ( dispatch, getState ) => {
 		if ( ! ( id in this.archives ) ) {
 			throw new Error( `Invalid archive ID: ${ id }` );
@@ -171,6 +172,7 @@ export default class Handler {
 	 * @param {Number} page Page to load. Uses next page if not manually supplied.
 	 * @return {[type]} [description]
 	 */
+	// eslint-disable-next-line no-undef
 	fetchMore = ( getSubstate, id, page = null ) => ( dispatch, getState ) => {
 		if ( ! ( id in this.archives ) ) {
 			throw new Error( `Invalid archive ID: ${ id }` );
@@ -220,6 +222,7 @@ export default class Handler {
 	 * @param {String} context Context to fetch.
 	 * @return {Function} Action to dispatch.
 	 */
+	// eslint-disable-next-line no-undef
 	fetchSingle = ( id, context = 'view' ) => dispatch => {
 		dispatch( { type: this.actions.getStart, id } );
 
@@ -270,6 +273,7 @@ export default class Handler {
 	 * @param {object} data Post object to update. Must have `id` property.
 	 * @return {Function} Action to dispatch.
 	 */
+	// eslint-disable-next-line no-undef
 	updateSingle = data => dispatch => {
 		const { id } = data;
 		if ( ! id ) {
@@ -315,6 +319,7 @@ export default class Handler {
 	 * @param {object} data Post data.
 	 * @return {Function} Action to dispatch.
 	 */
+	// eslint-disable-next-line no-undef
 	createSingle = data => dispatch => {
 		// Create temporary ID to allow tracking request.
 		const id = '_tmp_' + this.tempId++;
@@ -360,6 +365,7 @@ export default class Handler {
 	 * @param {object} action Action being dispatched.
 	 * @return {object} Reduced state.
 	 */
+	// eslint-disable-next-line no-undef
 	reducer = ( state = DEFAULT_STATE, action ) => {
 		switch ( action.type ) {
 			// Archive actions.
