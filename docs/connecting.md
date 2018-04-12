@@ -38,7 +38,7 @@ export default withSingle(
 )( SinglePost );
 ```
 
-`withSingle` components will automatically load the post if it's not available in the store. Your component receives five props:
+`withSingle` components will automatically load the post if it's not available in the store. Your component receives four data props, and two action props:
 
 * `postId` (mixed): The (resolved) ID for this post.
 * `post` (`object`): The post object.
