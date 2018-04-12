@@ -6,19 +6,26 @@ import { resolve } from './utilities';
 export default ( handler, getSubstate, id ) => Component => {
 	class WrappedComponent extends React.Component {
 		componentWillMount() {
-			if ( ! this.props.posts && ! this.props.loading ) {
-				this.props.onLoad();
+			if ( ! this.props._data.posts && ! this.props._data.loading ) {
+				this.props._actions.onLoad();
 			}
 		}
 
 		componentWillReceiveProps( nextProps ) {
-			if ( ! nextProps.posts && this.props.archiveId !== nextProps.archiveId ) {
-				nextProps.onLoad();
+			if ( ! nextProps._data.posts && this.props._data.archiveId !== nextProps._data.archiveId ) {
+				nextProps._actions.onLoad();
 			}
 		}
 
 		render() {
-			return <Component { ...this.props } />;
+			const { _data, _actions, ...props } = this.props;
+
+			const childProps = {
+				..._data,
+				..._actions,
+				...props,
+			};
+			return <Component { ...childProps } />;
 		}
 	}
 
@@ -28,19 +35,23 @@ export default ( handler, getSubstate, id ) => Component => {
 		const posts = handler.getArchive( substate, resolvedId );
 
 		return {
-			archiveId:   resolvedId,
-			posts,
-			loading:     handler.isArchiveLoading( substate, resolvedId ),
-			hasMore:     handler.hasMore( substate, resolvedId ),
-			loadingMore: handler.isLoadingMore( substate, resolvedId ),
+			_data: {
+				archiveId:   resolvedId,
+				posts,
+				loading:     handler.isArchiveLoading( substate, resolvedId ),
+				hasMore:     handler.hasMore( substate, resolvedId ),
+				loadingMore: handler.isLoadingMore( substate, resolvedId ),
+			},
 		};
 	};
 
 	const mapDispatchToProps = ( dispatch, props ) => {
 		const resolvedId = resolve( id, props );
 		return {
-			onLoad:     () => dispatch( handler.fetchArchive( resolvedId ) ),
-			onLoadMore: page => dispatch( handler.fetchMore( getSubstate, resolvedId, page ) ),
+			_actions: {
+				onLoad:     () => dispatch( handler.fetchArchive( resolvedId ) ),
+				onLoadMore: page => dispatch( handler.fetchMore( getSubstate, resolvedId, page ) ),
+			}
 		};
 	};
 
