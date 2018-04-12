@@ -137,8 +137,20 @@ export default class Handler {
 			return null;
 		}
 
-		const ids = substate.archives[ id ] || null;
-		const posts = ids ? substate.posts.filter( app => ids.indexOf( app.id ) >= 0 ) : null;
+		const ids = substate.archives[ id ];
+		if ( ! ids ) {
+			return null;
+		}
+
+		const posts = [];
+		substate.posts.forEach( post => {
+			const position = ids.indexOf( post.id );
+			if ( position === null ) {
+				return null;
+			}
+
+			posts[ position ] = post;
+		} );
 
 		return posts;
 	}
