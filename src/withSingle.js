@@ -3,7 +3,10 @@ import { connect } from 'react-redux';
 
 import { resolve } from './utilities';
 
-export default ( handler, getSubstate, mapPropsToId ) => Component => {
+export default ( handler, getSubstate, mapPropsToId, options = {} ) => Component => {
+	const mapDataToProps = options.mapDataToProps || ( data => data );
+	const mapActionsToProps = options.mapActionsToProps || ( actions => actions );
+
 	class WrappedComponent extends React.Component {
 		componentWillMount() {
 			if ( ! this.props._data.posts && ! this.props._data.loading ) {
@@ -21,8 +24,8 @@ export default ( handler, getSubstate, mapPropsToId ) => Component => {
 			const { _data, _actions, ...props } = this.props;
 
 			const childProps = {
-				..._data,
-				..._actions,
+				...mapDataToProps( _data, props ),
+				...mapActionsToProps( _actions, props ),
 				...props,
 			};
 			return <Component { ...childProps } />;
