@@ -58,6 +58,14 @@ export default id => withArchive( posts, state => state.posts, id );
 ```
 
 
+### Advanced Options
+
+You can pass a fourth parameter called `options` to `withSingle`. This is an object with the following keys:
+
+* `mapDataToProps` (`Function`: `object => object`): Map the data props to props passed to your component. By default, this passes through all data props.
+* `mapActionsToProps` (`Function`: `object => object`): Map the action props to props to your component. By default, this passes through all action props.
+
+
 ## Manually Connect
 
 If you're already connecting your component to the state, or want to manage the loading yourself, you can instead use the helper methods on the handler:
