@@ -61,14 +61,14 @@ export default withArchive(
 )( TodayArchive );
 ```
 
-`withArchive` components will automatically load the archive if it's not available in the store. Your component receives seven props:
+`withArchive` components will automatically load the archive if it's not available in the store. Your component receives five data props, and two action props:
 
 * `archiveId` (mixed): The (resolved) ID for this archive.
 * `posts` (`object[]`): A list of objects in the archive.
 * `loading` (`boolean`): Whether the archive is currently being loaded.
-* `onLoad` (`Function`: `() => Promise`): Loader function. Called automatically by the HOC, but you can call this again if needed.
 * `hasMore` (`boolean`): Whether there are more pages of the archive to load.
 * `loadingMore` (`boolean`): Whether the next page of the archive is being loaded.
+* `onLoad` (`Function`: `() => Promise`): Loader function. Called automatically by the HOC, but you can call this again if needed.
 * `onLoadMore` (`Function`: `( page = null ) => Promise`): Loader function. Call this to load the next page of the archive, or pass a page number to load that specific page.
 
 For convenience, you might want to make your own HOC to simplify this to just an ID:
@@ -93,6 +93,14 @@ export default withArchive(
 ```
 
 (The resolved ID will be passed to your component as `archiveId`.)
+
+
+### Advanced Options
+
+You can pass a fourth parameter called `options` to `withArchive`. This is an object with the following keys:
+
+* `mapDataToProps` (`Function`: `object => object`): Map the data props to props passed to your component. By default, this passes through all data props.
+* `mapActionsToProps` (`Function`: `object => object`): Map the action props to props to your component. By default, this passes through all action props.
 
 
 ## Pagination

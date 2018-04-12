@@ -38,7 +38,7 @@ export default withSingle(
 )( SinglePost );
 ```
 
-`withSingle` components will automatically load the post if it's not available in the store. Your component receives five props:
+`withSingle` components will automatically load the post if it's not available in the store. Your component receives four data props, and two action props:
 
 * `postId` (mixed): The (resolved) ID for this post.
 * `post` (`object`): The post object.
@@ -56,6 +56,14 @@ import { posts } from './types';
 
 export default id => withArchive( posts, state => state.posts, id );
 ```
+
+
+### Advanced Options
+
+You can pass a fourth parameter called `options` to `withSingle`. This is an object with the following keys:
+
+* `mapDataToProps` (`Function`: `object => object`): Map the data props to props passed to your component. By default, this passes through all data props.
+* `mapActionsToProps` (`Function`: `object => object`): Map the action props to props to your component. By default, this passes through all action props.
 
 
 ## Manually Connect
