@@ -54,7 +54,7 @@ export default ( handler, getSubstate, id, options = {} ) => Component => {
 			_actions: {
 				onLoad:     () => dispatch( handler.fetchArchive( resolvedId ) ),
 				onLoadMore: page => dispatch( handler.fetchMore( getSubstate, resolvedId, page ) ),
-			}
+			},
 		};
 	};
 
