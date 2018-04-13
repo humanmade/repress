@@ -51,6 +51,7 @@ export default class Handler {
 		};
 
 		this.tempId = 0;
+		this.requests = {};
 	}
 
 	/**
@@ -71,8 +72,14 @@ export default class Handler {
 		};
 
 		const fullUrl = url + '?' + qs.stringify( args );
-		return fetch( fullUrl, { ...this.fetchOptions, ...options } )
-			.then( parseResponse );
+		const cacheKey = fullUrl + '!' + JSON.stringify( options );
+		if ( this.requests[ cacheKey ] ) {
+			this.requests[ cacheKey ] = fetch( fullUrl, { ...this.fetchOptions, ...options } )
+				.then( parseResponse );
+
+			this.requests[ cacheKey ].then( () => delete this.requests[ cacheKey ] );
+		}
+		return this.requests[ cacheKey ];
 	}
 
 	/**
