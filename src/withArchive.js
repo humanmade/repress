@@ -24,9 +24,9 @@ export default ( handler, getSubstate, id, options = {} ) => Component => {
 			const { _data, _actions, ...props } = this.props;
 
 			const childProps = {
+				...props,
 				...mapDataToProps( _data, props ),
 				...mapActionsToProps( _actions, props ),
-				...props,
 			};
 			return <Component { ...childProps } />;
 		}
