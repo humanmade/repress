@@ -9,11 +9,11 @@ const DEFAULT_STATE = {
 	_initialized:   true,
 	archives:       {},
 	archivePages:   {},
-	loadingPost:    false,
-	loadingArchive: false,
-	loadingMore:    false,
+	loadingPost:    [],
+	loadingArchive: [],
+	loadingMore:    [],
 	posts:          [],
-	saving:         false,
+	saving:         [],
 	deleting:       [],
 };
 
@@ -126,7 +126,7 @@ export default class Handler {
 	 * @return {Boolean} True if the archive is currently being loaded, false otherwise.
 	 */
 	isArchiveLoading( substate, id ) {
-		return substate.loadingArchive === id;
+		return substate.loadingArchive.indexOf( id ) >= 0;
 	}
 
 	/**
@@ -228,7 +228,7 @@ export default class Handler {
 	 * @return {Boolean} True if the next page of the archive is currently being loaded, false otherwise.
 	 */
 	isLoadingMore( substate, id ) {
-		return substate.loadingMore === id;
+		return substate.loadingMore.indexOf( id ) >= 0;
 	}
 
 	/**
@@ -265,7 +265,7 @@ export default class Handler {
 	 * @return {Boolean} True if the post is currently being loaded, false otherwise.
 	 */
 	isPostLoading( substate, id ) {
-		return substate.loadingPost === id;
+		return substate.loadingPost.indexOf( id ) >= 0;
 	}
 
 	/**
@@ -326,7 +326,7 @@ export default class Handler {
 	 * @return {Boolean} True if the post is currently being saved, false otherwise.
 	 */
 	isPostSaving( substate, id ) {
-		return substate.saving === id;
+		return substate.saving.indexOf( id ) >= 0;
 	}
 
 	/**
@@ -369,7 +369,7 @@ export default class Handler {
 	 * @return {Boolean} True if a post is being created, false otherwise.
 	 */
 	isPostCreating( substate ) {
-		return substate.saving.indexOf( '_tmp_' ) === 0;
+		return !! substate.saving.find( p => p.indexOf( '_tmp_' ) === 0 );
 	}
 
 	/**
@@ -426,14 +426,17 @@ export default class Handler {
 			case this.actions.archiveStart:
 				return {
 					...state,
-					loadingArchive: action.id,
+					loadingArchive: [
+						...state.loadingArchive,
+						action.id,
+					],
 				};
 
 			case this.actions.archiveSuccess: {
 				const ids = action.results.map( post => post.id );
 				return {
 					...state,
-					loadingArchive: false,
+					loadingArchive: state.loadingArchive.filter( a => a !== action.id ),
 					archives:       {
 						...state.archives,
 						[ action.id ]: ids,
@@ -452,14 +455,17 @@ export default class Handler {
 			case this.actions.archiveError:
 				return {
 					...state,
-					loadingArchive: false,
+					loadingArchive: state.loadingArchive.filter( a => a !== action.id ),
 				};
 
 			// Archive pagination actions.
 			case this.actions.archiveMoreStart:
 				return {
 					...state,
-					loadingMore: action.id,
+					loadingMore: [
+						...state.loadingMore,
+						action.id,
+					],
 				};
 
 			case this.actions.archiveMoreSuccess: {
@@ -467,7 +473,7 @@ export default class Handler {
 				const currentIds = state.archives[ action.id ] || [];
 				return {
 					...state,
-					loadingMore: false,
+					loadingMore: state.loadingMore.filter( m => m !== action.id ),
 					archives:    {
 						...state.archives,
 						[ action.id ]: [
@@ -489,20 +495,23 @@ export default class Handler {
 			case this.actions.archiveMoreError:
 				return {
 					...state,
-					loadingMore: false,
+					loadingMore: state.loadingMore.filter( m => m !== action.id ),
 				};
 
 			// Single actions.
 			case this.actions.getStart:
 				return {
 					...state,
-					loadingPost: action.id,
+					loadingPost: [
+						...state.loadingPost,
+						action.id,
+					],
 				};
 
 			case this.actions.getSuccess: {
 				return {
 					...state,
-					loadingPost: false,
+					loadingPost: state.loadingPost.filter( p => p !== action.id ),
 					posts:       mergePosts( state.posts, [ action.data ] ),
 				};
 			}
@@ -510,21 +519,24 @@ export default class Handler {
 			case this.actions.getError:
 				return {
 					...state,
-					loadingPost: false,
+					loadingPost: state.loadingPost.filter( p => p !== action.id ),
 				};
 
 			case this.actions.createStart:
 			case this.actions.updateStart:
 				return {
 					...state,
-					saving: action.id,
+					saving: [
+						...state.saving,
+						action.id,
+					],
 				};
 
 			case this.actions.createSuccess:
 			case this.actions.updateSuccess:
 				return {
 					...state,
-					saving: false,
+					saving: state.saving.filter( p => p !== action.id ),
 					posts:  mergePosts( state.posts, [ action.data ] ),
 				};
 
@@ -532,7 +544,7 @@ export default class Handler {
 			case this.actions.updateError:
 				return {
 					...state,
-					saving: false,
+					saving: state.saving.filter( p => p !== action.id ),
 				};
 
 			case this.actions.deleteStart:
