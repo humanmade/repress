@@ -261,7 +261,7 @@ export default class Handler {
 	 * @return {Boolean} True if the post is currently being loaded, false otherwise.
 	 */
 	isPostLoading( substate, id ) {
-		return substate.loadingSingle === id;
+		return substate.loadingPost === id;
 	}
 
 	/**
