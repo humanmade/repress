@@ -1,6 +1,6 @@
 {
 	"name": "@humanmade/repress",
-	"version": "0.4.2",
+	"version": "0.4.3",
 	"description": "Connect your Redux store to the WordPress REST API.",
 	"main": "dist/bundle.js",
 	"repository": "git@github.com:humanmade/repress.git",

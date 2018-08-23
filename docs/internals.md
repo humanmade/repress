@@ -6,9 +6,10 @@ Each handler's substate is an object with the following properties:
 
 * `archives`: An object containing a map from archive ID to list of object IDs.
 * `posts`: A flat list of all posts objects.
-* `loadingArchive`: A string indicating the currently loading archive. `false` if not loading.
-* `loadingPost`: A number indicating the currently loading object ID. `false` if not loading.
-* `saving`: A number indicating the currently saving object ID. `false` if not loading.
+* `loadingArchive`: An array containing archive IDs currently being loaded.
+* `loadingPost`: An array containing object IDs currently being loaded.
+* `saving`: An array containing object IDs currently being saved.
+* `deleting`: An array containing object IDs currently being deleted.
 
 Generally, you should use the helpers on the handler object rather than reaching into the substate directly.
 
