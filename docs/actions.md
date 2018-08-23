@@ -1,11 +1,12 @@
 # Actions
 
-The handler contains 4 built-in action creators, which mirror the actions available from the REST API:
+The handler contains 5 built-in action creators, which mirror the actions available from the REST API:
 
 * `fetchArchive( id )`: Fetches query results for the type.
 * `fetchSingle( id )`: Fetches a single object.
 * `updateSingle( id )`: Updates a single object.
 * `createSingle( id )`: Creates a single object.
+* `deleteSingle( id )`: Deletes a single object.
 
 Each of these is an action creator, which returns an action; specifically, a thunk. These thunks each return the request promise.
 
