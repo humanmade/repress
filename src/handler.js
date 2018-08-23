@@ -382,7 +382,7 @@ export default class Handler {
 		dispatch( { type: this.actions.deleteStart, id } );
 
 		const options = {
-			method:  'DELETE',
+			method: 'DELETE',
 		};
 		return this.fetch( `${ this.url }/${ id }`, {}, options )
 			.then( data => {
