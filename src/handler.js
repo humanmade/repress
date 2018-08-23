@@ -14,6 +14,7 @@ const DEFAULT_STATE = {
 	loadingMore:    [],
 	posts:          [],
 	saving:         [],
+	deleting:       [],
 };
 
 export default class Handler {
@@ -45,6 +46,9 @@ export default class Handler {
 			createStart:        `CREATE_${ upperType }_REQUEST`,
 			createSuccess:      `CREATE_${ upperType }`,
 			createError:        `CREATE_${ upperType }_ERROR`,
+			deleteStart:        `DELETE_${ upperType }_REQUEST`,
+			deleteSuccess:      `DELETE_${ upperType }`,
+			deleteError:        `DELETE_${ upperType }_ERROR`,
 
 			// Allow overrides.
 			...( options.actions || {} ),
@@ -369,6 +373,44 @@ export default class Handler {
 	}
 
 	/**
+	 * Action creator to delete a post.
+	 *
+	 * @param {object} id Post ID.
+	 * @return {Function} Action to dispatch.
+	 */
+	deleteSingle = id => dispatch => {
+		dispatch( { type: this.actions.deleteStart, id } );
+
+		const options = {
+			method: 'DELETE',
+		};
+		return this.fetch( `${ this.url }/${ id }`, {}, options )
+			.then( data => {
+				dispatch( { type: this.actions.deleteSuccess, id, data } );
+				return data.id;
+			} )
+			.catch( error => {
+				dispatch( { type: this.actions.deleteError, id, error } );
+
+				// Rethrow for other promise handlers.
+				if ( this.rethrow ) {
+					throw error;
+				}
+			} );
+	}
+
+	/**
+	 * Is a post being deleted?
+	 *
+	 * @param {object} substate Substate registered for the type.
+	 * @param {Number} id Post ID.
+	 * @return {Boolean} True if a post is being deleted, false otherwise.
+	 */
+	isPostDeleting( substate, id ) {
+		return substate.deleting.indexOf( id ) >= 0;
+	}
+
+	/**
 	 * Reducer for the substate.
 	 *
 	 * This needs to be added to your store to be functional.
@@ -503,6 +545,28 @@ export default class Handler {
 				return {
 					...state,
 					saving: state.saving.filter( p => p !== action.id ),
+				};
+
+			case this.actions.deleteStart:
+				return {
+					...state,
+					deleting: [
+						...state.deleting,
+						action.id,
+					],
+				};
+
+			case this.actions.deleteSuccess:
+				return {
+					...state,
+					deleting: state.deleting.filter( id => id !== action.id ),
+					posts: state.posts.filter( post => post.id !== action.id ),
+				};
+
+			case this.actions.deleteError:
+				return {
+					...state,
+					deleting: state.deleting.filter( id => id !== action.id ),
 				};
 
 			default:
