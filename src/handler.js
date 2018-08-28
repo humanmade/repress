@@ -70,13 +70,14 @@ export default class Handler {
 	}
 
 	fetch( url, query, options = {} ) {
+		const fullUrl = url + '?' + qs.stringify( query );
+		const cacheKey = fullUrl + '!' + JSON.stringify( options );
+
 		const args = {
 			...this.query,
 			...query,
 		};
 
-		const fullUrl = url + '?' + qs.stringify( args );
-		const cacheKey = fullUrl + '!' + JSON.stringify( options );
 		if ( this.requests[ cacheKey ] ) {
 			this.requests[ cacheKey ] = fetch( fullUrl, { ...this.fetchOptions, ...options } )
 				.then( parseResponse );
