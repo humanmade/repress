@@ -70,14 +70,14 @@ export default class Handler {
 	}
 
 	fetch( url, query, options = {} ) {
-		const fullUrl = url + '?' + qs.stringify( query );
-		const cacheKey = fullUrl + '!' + JSON.stringify( options );
+		const cacheKey = url + '?' + qs.stringify( query ) + '!' + JSON.stringify( options );
 		const cacheable = ! options.method || options.method === 'GET' || options.method === 'HEAD';
 
 		const args = {
 			...this.query,
 			...query,
 		};
+		const fullUrl = url + '?' + qs.stringify( args );
 		if ( cacheable && this.requests[ cacheKey ] ) {
 			return this.requests[ cacheKey ];
 		}
