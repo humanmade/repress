@@ -83,6 +83,7 @@ export default class Handler {
 				.then( parseResponse );
 
 			this.requests[ cacheKey ].then( () => delete this.requests[ cacheKey ] );
+			this.requests[ cacheKey ].catch( () => delete this.requests[ cacheKey ] );
 		}
 		return this.requests[ cacheKey ];
 	}
