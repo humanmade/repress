@@ -3,6 +3,7 @@ const path = require( 'path' );
 process.env.NODE_ENV = process.env.NODE_ENV || 'production';
 
 module.exports = {
+	mode: 'production',
 	entry:  './src/index.js',
 	output: {
 		filename:      'bundle.js',
@@ -17,7 +18,7 @@ module.exports = {
 				exclude: /node_modules/,
 				use:     {
 					loader:  'babel-loader',
-					options: { presets: [ 'babel-preset-react-app' ] },
+					options: { presets: [ 'react-app' ] },
 				},
 			},
 		],
