@@ -8,15 +8,15 @@ export default ( handler, getSubstate, id, options = {} ) => Component => {
 	const mapActionsToProps = options.mapActionsToProps || ( actions => actions );
 
 	class WrappedComponent extends React.Component {
-		componentWillMount() {
+		componentDidMount() {
 			if ( ! this.props._data.posts && ! this.props._data.loading ) {
 				this.props._actions.onLoad();
 			}
 		}
 
-		componentWillReceiveProps( nextProps ) {
-			if ( ! nextProps._data.posts && this.props._data.archiveId !== nextProps._data.archiveId ) {
-				nextProps._actions.onLoad();
+		componentDidUpdate( prevProps ) {
+			if ( ! this.props._data.posts && prevProps._data.archiveId !== this.props._data.archiveId ) {
+				this.props._actions.onLoad();
 			}
 		}
 
