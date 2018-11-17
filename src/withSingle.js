@@ -9,13 +9,13 @@ export default ( handler, getSubstate, mapPropsToId, options = {} ) => Component
 
 	class WrappedComponent extends React.Component {
 		componentDidMount() {
-			if ( ! this.props._data.posts && ! this.props._data.loading ) {
+			if ( ! this.props._data.post && ! this.props._data.loading ) {
 				this.props._actions.onLoad();
 			}
 		}
 
 		componentDidUpdate( prevProps ) {
-			if ( ! this.props._data.posts && prevProps._data.postId !== this.props._data.postId ) {
+			if ( ! this.props._data.post && prevProps._data.postId !== this.props._data.postId ) {
 				this.props._actions.onLoad();
 			}
 		}
