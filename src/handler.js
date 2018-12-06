@@ -74,8 +74,19 @@ export default class Handler {
 			...query,
 		};
 
+		const opts = {
+			...this.fetchOptions,
+			...options,
+
+			// Manually merge headers
+			headers: {
+				...this.fetchOptions.headers,
+				...options.headers,
+			},
+		};
+
 		const fullUrl = url + '?' + qs.stringify( args );
-		return fetch( fullUrl, { ...this.fetchOptions, ...options } )
+		return fetch( fullUrl, opts )
 			.then( parseResponse );
 	}
 
