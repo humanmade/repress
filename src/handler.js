@@ -160,7 +160,7 @@ export default class Handler {
 		const posts = [];
 		substate.posts.forEach( post => {
 			const position = ids.indexOf( post.id );
-			if ( position === null ) {
+			if ( position === -1 ) {
 				return null;
 			}
 
