@@ -174,6 +174,44 @@ export default class Handler {
 	}
 
 	/**
+	 * Get archive results from the store, restricted to a specific page.
+	 *
+	 * Retrieves the posts for a given page of an archive.
+	 *
+	 * @param {object} substate Substate registered for the type.
+	 * @param {mixed} id Archive ID.
+	 * @param {Number} page Page number.
+	 * @return {Object[]|null} List of objects for given page of the archive, or null if none loaded.
+	 */
+	getArchivePage( substate, id, page ) {
+		if ( ! substate.archivesByPage || ! substate.posts ) {
+			return null;
+		}
+
+		const pages = substate.archivesByPage[ id ];
+		if ( ! pages ) {
+			return null;
+		}
+
+		const ids = pages[ Number( page ) ];
+		if ( ! ids ) {
+			return null;
+		}
+
+		const posts = [];
+		substate.posts.forEach( post => {
+			const position = ids.indexOf( post.id );
+			if ( position === null ) {
+				return null;
+			}
+
+			posts[ position ] = post;
+		} );
+
+		return posts;
+	}
+
+	/**
 	 * Are there more pages in the archive?
 	 *
 	 * Compares the currently loaded page against the total pages for
