@@ -47,6 +47,7 @@ export default ( handler, getSubstate, id, options = {} ) => Component => {
 			_data: {
 				archiveId:   resolvedId,
 				page,
+				totalPages,
 				posts:       handler.getArchivePage( substate, resolvedId, page ),
 				loading:     handler.isArchiveLoading( substate, resolvedId ),
 				hasMore:     totalPages ? page < totalPages : true,

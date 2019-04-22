@@ -163,6 +163,7 @@ This HOC passes the same props as `withArchive`, with the following differences:
 
 * `posts` (`object[]`): A list of objects on the given page of the archive.
 * `page` (`Number`): The current page being viewed.
+* `totalPages` (`Number`): Total number of pages available for the archive.
 
 The archive page to load should be passed via the `page` prop to your component. To override this behaviour, you can pass a `getPage` function in the `options` parameter to the HOC:
 
