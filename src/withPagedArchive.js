@@ -41,6 +41,7 @@ export default ( handler, getSubstate, id, options = {} ) => Component => {
 		const substate = getSubstate( state );
 		const resolvedId = resolve( id, props );
 		const page = getPage( props );
+		const totalPages = handler.getTotalPages( substate, resolvedId );
 
 		return {
 			_data: {
@@ -48,7 +49,7 @@ export default ( handler, getSubstate, id, options = {} ) => Component => {
 				page,
 				posts:       handler.getArchivePage( substate, resolvedId, page ),
 				loading:     handler.isArchiveLoading( substate, resolvedId ),
-				hasMore:     handler.hasMore( substate, resolvedId ),
+				hasMore:     totalPages ? page < totalPages : true,
 				loadingMore: handler.isLoadingMore( substate, resolvedId ),
 			},
 		};
