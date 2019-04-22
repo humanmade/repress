@@ -16,10 +16,12 @@ export default ( handler, getSubstate, id, options = {} ) => Component => {
 		}
 
 		componentDidUpdate( prevProps ) {
-			if ( ! this.props._data.posts && prevProps._data.archiveId !== this.props._data.archiveId ) {
-				this.props._actions.onLoad();
-			} else if ( prevProps._data.page !== this.props._data.page ) {
-				this.props._actions.onLoadMore( this.props._data.page );
+			if ( ! this.props._data.posts ) {
+				if ( prevProps._data.archiveId !== this.props._data.archiveId ) {
+					this.props._actions.onLoad();
+				} else if ( prevProps._data.page !== this.props._data.page ) {
+					this.props._actions.onLoadMore( this.props._data.page );
+				}
 			}
 		}
 
