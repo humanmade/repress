@@ -105,7 +105,7 @@ export default class Handler {
 	 * @return {Function} Action to dispatch.
 	 */
 	// eslint-disable-next-line no-undef
-	fetchArchive = id => ( dispatch, getState ) => {
+	fetchArchive = ( id, page = null ) => ( dispatch, getState ) => {
 		if ( ! ( id in this.archives ) ) {
 			throw new Error( `Invalid archive ID: ${ id }` );
 		}
@@ -114,12 +114,21 @@ export default class Handler {
 
 		const query = this.archives[ id ];
 		const queryArgs = isFunction( query ) ? query( getState() ) : query;
-		const page = Number( queryArgs.page || 1 );
+
+		// Override page if passed
+		const actualPage = Number( page || queryArgs.page || 1 );
+		queryArgs.page = actualPage;
 
 		this.fetch( this.url, queryArgs )
 			.then( results => {
 				const pages = results.__wpTotalPages || 1;
-				dispatch( { type: this.actions.archiveSuccess, id, results, page, pages } );
+				dispatch( {
+					type: this.actions.archiveSuccess,
+					id,
+					results,
+					page: actualPage,
+					pages,
+				} );
 				return id;
 			} )
 			.catch( error => {

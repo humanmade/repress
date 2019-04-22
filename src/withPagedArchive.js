@@ -58,9 +58,10 @@ export default ( handler, getSubstate, id, options = {} ) => Component => {
 
 	const mapDispatchToProps = ( dispatch, props ) => {
 		const resolvedId = resolve( id, props );
+		const page = getPage( props );
 		return {
 			_actions: {
-				onLoad:     () => dispatch( handler.fetchArchive( resolvedId ) ),
+				onLoad:     () => dispatch( handler.fetchArchive( resolvedId, page ) ),
 				onLoadMore: page => dispatch( handler.fetchMore( getSubstate, resolvedId, page ) ),
 			},
 		};
