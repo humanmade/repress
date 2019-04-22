@@ -248,7 +248,7 @@ export default class Handler {
 
 		const state = getState();
 		const substate = getSubstate( state );
-		page = page || ( substate.archivePages[ id ].current || 1 ) + 1;
+		page = Number( page || ( substate.archivePages[ id ].current || 1 ) + 1 );
 
 		dispatch( { type: this.actions.archiveMoreStart, id, page } );
 
