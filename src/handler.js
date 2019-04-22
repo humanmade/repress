@@ -504,7 +504,7 @@ export default class Handler {
 					archivePages: {
 						...state.archivePages,
 						[ action.id ]: {
-							current: 1,
+							current: action.page,
 							total:   action.pages,
 						},
 					},
