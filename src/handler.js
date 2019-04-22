@@ -9,6 +9,7 @@ const DEFAULT_STATE = {
 	_initialized:   true,
 	archives:       {},
 	archivePages:   {},
+	archivesByPage: {},
 	loadingPost:    [],
 	loadingArchive: [],
 	loadingMore:    [],
@@ -113,10 +114,12 @@ export default class Handler {
 
 		const query = this.archives[ id ];
 		const queryArgs = isFunction( query ) ? query( getState() ) : query;
+		const page = Number( queryArgs.page || 1 );
+
 		this.fetch( this.url, queryArgs )
 			.then( results => {
 				const pages = results.__wpTotalPages || 1;
-				dispatch( { type: this.actions.archiveSuccess, id, results, pages } );
+				dispatch( { type: this.actions.archiveSuccess, id, results, page, pages } );
 				return id;
 			} )
 			.catch( error => {
@@ -445,12 +448,20 @@ export default class Handler {
 
 			case this.actions.archiveSuccess: {
 				const ids = action.results.map( post => post.id );
+				const currentByPage = state.archivesByPage[ action.id ] || [];
 				return {
 					...state,
 					loadingArchive: state.loadingArchive.filter( a => a !== action.id ),
 					archives:       {
 						...state.archives,
 						[ action.id ]: ids,
+					},
+					archivesByPage: {
+						...state.archivesByPage,
+						[ action.id ]: {
+							...currentByPage,
+							[ action.page ]: ids,
+						},
 					},
 					archivePages: {
 						...state.archivePages,
@@ -482,6 +493,7 @@ export default class Handler {
 			case this.actions.archiveMoreSuccess: {
 				const ids = action.results.map( post => post.id );
 				const currentIds = state.archives[ action.id ] || [];
+				const currentByPage = state.archivesByPage[ action.id ] || [];
 				return {
 					...state,
 					loadingMore: state.loadingMore.filter( m => m !== action.id ),
@@ -491,6 +503,13 @@ export default class Handler {
 							...currentIds,
 							...ids,
 						],
+					},
+					archivesByPage: {
+						...state.archivesByPage,
+						[ action.id ]: {
+							...currentByPage,
+							[ action.page ]: ids,
+						},
 					},
 					archivePages: {
 						...state.archivePages,
