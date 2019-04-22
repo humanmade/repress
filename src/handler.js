@@ -212,6 +212,21 @@ export default class Handler {
 	}
 
 	/**
+	 * Get the total number of pages for an archive.
+	 *
+	 * @param {object} substate Substate registered for the type.
+	 * @param {mixed} id Archive ID.
+	 * @return {Number|null} Number of pages in the archive if known, null otherwise.
+	 */
+	getTotalPages( substate, id ) {
+		if ( ! substate.archivePages[ id ] ) {
+			return null;
+		}
+
+		return substate.archivePages[ id ].total || 1;
+	}
+
+	/**
 	 * Are there more pages in the archive?
 	 *
 	 * Compares the currently loaded page against the total pages for
