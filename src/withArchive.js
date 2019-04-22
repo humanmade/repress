@@ -39,10 +39,10 @@ export default ( handler, getSubstate, id, options = {} ) => Component => {
 
 		return {
 			_data: {
-				archiveId:   resolvedId,
+				archiveId: resolvedId,
 				posts,
-				loading:     handler.isArchiveLoading( substate, resolvedId ),
-				hasMore:     handler.hasMore( substate, resolvedId ),
+				loading: handler.isArchiveLoading( substate, resolvedId ),
+				hasMore: handler.hasMore( substate, resolvedId ),
 				loadingMore: handler.isLoadingMore( substate, resolvedId ),
 			},
 		};
@@ -52,7 +52,7 @@ export default ( handler, getSubstate, id, options = {} ) => Component => {
 		const resolvedId = resolve( id, props );
 		return {
 			_actions: {
-				onLoad:     () => dispatch( handler.fetchArchive( resolvedId ) ),
+				onLoad: () => dispatch( handler.fetchArchive( resolvedId ) ),
 				onLoadMore: page => dispatch( handler.fetchMore( getSubstate, resolvedId, page ) ),
 			},
 		};
