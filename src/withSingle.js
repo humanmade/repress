@@ -40,9 +40,9 @@ export default ( handler, getSubstate, mapPropsToId, options = {} ) => Component
 		return {
 			_data: {
 				post,
-				postId:  resolvedId,
+				postId: resolvedId,
 				loading: handler.isPostLoading( substate, resolvedId ),
-				saving:  handler.isPostSaving( substate, resolvedId ),
+				saving: handler.isPostSaving( substate, resolvedId ),
 			},
 		};
 	};
@@ -51,8 +51,11 @@ export default ( handler, getSubstate, mapPropsToId, options = {} ) => Component
 		const resolvedId = resolve( mapPropsToId, props );
 		return {
 			_actions: {
-				onLoad:       ( context = 'view' ) => dispatch( handler.fetchSingle( resolvedId, context ) ),
-				onUpdatePost: data => dispatch( handler.updateSingle( { id: resolvedId, ...data } ) ),
+				onLoad: ( context = 'view' ) => dispatch( handler.fetchSingle( resolvedId, context ) ),
+				onUpdatePost: data => dispatch( handler.updateSingle( {
+					id: resolvedId,
+					...data,
+				} ) ),
 			},
 		};
 	};

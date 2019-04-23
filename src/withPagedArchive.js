@@ -45,12 +45,12 @@ export default ( handler, getSubstate, id, options = {} ) => Component => {
 
 		return {
 			_data: {
-				archiveId:   resolvedId,
+				archiveId: resolvedId,
 				page,
 				totalPages,
-				posts:       handler.getArchivePage( substate, resolvedId, page ),
-				loading:     handler.isArchiveLoading( substate, resolvedId ),
-				hasMore:     totalPages ? page < totalPages : true,
+				posts: handler.getArchivePage( substate, resolvedId, page ),
+				loading: handler.isArchiveLoading( substate, resolvedId ),
+				hasMore: totalPages ? page < totalPages : true,
 				loadingMore: handler.isLoadingMore( substate, resolvedId ),
 			},
 		};
@@ -61,7 +61,7 @@ export default ( handler, getSubstate, id, options = {} ) => Component => {
 		const page = getPage( props );
 		return {
 			_actions: {
-				onLoad:     () => dispatch( handler.fetchArchive( resolvedId, page ) ),
+				onLoad: () => dispatch( handler.fetchArchive( resolvedId, page ) ),
 				onLoadMore: page => dispatch( handler.fetchMore( getSubstate, resolvedId, page ) ),
 			},
 		};
