@@ -105,16 +105,16 @@ You can pass a fourth parameter called `options` to `withArchive`. This is an ob
 
 ## Pagination
 
-Pagination support for archives is included out of the box. You can use either infinite scroll style ("more") or manual pagination.
+Pagination support for archives is included out of the box. You can use either infinite scroll style ("more-style") or manual pagination.
 
-With more pagination, your component will receive all posts Repress has loaded. When you load more posts, it will append these to the list of posts, and your component will receive this via the `posts` prop.
+With more-style pagination, your component will receive all posts Repress has loaded. When you load more posts, it will append these to the list of posts, and your component will receive this via the `posts` prop.
 
 With manual pagination, you specify which page of the archive to load, and your component will only receive posts on that page of the archive. When you load a different page, Repress will only pass the posts for that page. Repress will keep other pages in memory allowing for fast pagination back to already-loaded pages.
 
-Use more pagination when you want an infinite scroll list of posts that expands with additional items, or if you plan on loading the entire archive into memory. Use manual pagination when you want to show a subset of posts rather than the whole archive, or if the page number is externally controlled (e.g. in the URL).
+Use more-style pagination when you want an infinite scroll list of posts that expands with additional items, or if you plan on loading the entire archive into memory. Use manual pagination when you want to show a subset of posts rather than the whole archive, or if the page number is externally controlled (e.g. in the URL).
 
 
-### More Pagination
+### More-Style Pagination
 
 To load the next page in an archive, simply call the `onLoadMore` prop passed in by `withArchive`. Repress keeps track of which page you're accessing, and appends additional posts to the existing list of posts.
 
