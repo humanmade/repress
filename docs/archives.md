@@ -208,6 +208,7 @@ function Blog( props ) {
 						onClick={ () => props.onNewer() }
 					>Newer Posts</button>
 				) : null }
+			</div>
 		: null }
 	</div>;
 }
