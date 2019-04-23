@@ -105,7 +105,18 @@ You can pass a fourth parameter called `options` to `withArchive`. This is an ob
 
 ## Pagination
 
-Pagination support for archives is included out of the box. To load the next page in an archive, simply call the `onLoadMore` prop passed in by `withArchive`.
+Pagination support for archives is included out of the box. You can use either infinite scroll style ("more-style") or manual pagination.
+
+With more-style pagination, your component will receive all posts Repress has loaded. When you load more posts, it will append these to the list of posts, and your component will receive this via the `posts` prop.
+
+With manual pagination, you specify which page of the archive to load, and your component will only receive posts on that page of the archive. When you load a different page, Repress will only pass the posts for that page. Repress will keep other pages in memory allowing for fast pagination back to already-loaded pages.
+
+Use more-style pagination when you want an infinite scroll list of posts that expands with additional items, or if you plan on loading the entire archive into memory. Use manual pagination when you want to show a subset of posts rather than the whole archive, or if the page number is externally controlled (e.g. in the URL).
+
+
+### More-Style Pagination
+
+To load the next page in an archive, simply call the `onLoadMore` prop passed in by `withArchive`. Repress keeps track of which page you're accessing, and appends additional posts to the existing list of posts.
 
 You usually only want to call `onLoadMore` if there actually is more to load, so you should check `hasMore` before calling the function. Also, you should typically only call `onLoadMore` based on user input (a button, link, scroll handler, etc); if you need more posts on load, increase the `per_page` parameter in your query instead.
 
@@ -143,6 +154,84 @@ function Blog( props ) {
 export default withArchive( posts, state => state.posts, 'blog' )( Blog );
 ```
 
+
+### Manual Pagination
+
+For manual pagination, use the `withPagedArchive` HOC instead of `withArchive`. This allows you to manually specify the page of the archive to load, and ignores Repress's internal page counter. Additionally, only the current page of items is passed to your component.
+
+This HOC passes the same props as `withArchive`, with the following differences:
+
+* `posts` (`object[]`): A list of objects on the given page of the archive.
+* `page` (`Number`): The current page being viewed.
+* `totalPages` (`Number`): Total number of pages available for the archive.
+
+The archive page to load should be passed via the `page` prop to your component. To override this behaviour, you can pass a `getPage` function in the `options` parameter to the HOC:
+
+* `getPage` (`Function`: `object => Number`): Map passed props to the page number. By default, this is `props => props.page`.
+
+`onLoadMore` is automatically called for you when the page changes. You can use `this.props.hasMore` to determine whether to show navigation to the next page, and you can check `this.props.page > 1` to determine whether to show navigation to the previous page.
+
+For example, the following component renders a simple list of posts with navigation to browse back and forth:
+
+```js
+function Blog( props ) {
+	const { hasMore, loading, loadingMore, page, posts } = props;
+
+	if ( loading ) {
+		return <div>Loading…</div>;
+	}
+
+	if ( ! posts ) {
+		return <div>No posts</div>;
+	}
+
+	return <div>
+		<ol>
+			{ posts.map( post =>
+				<li key={ post.id }>{ post.title.rendered }</li>
+			) }
+		</ol>
+
+		{ loadingMore ?
+			<p>Loading more…</p>
+		: (
+			<div>
+				{ hasMore ? (
+					<button
+						type="button"
+						onClick={ () => props.onOlder() }
+					>Older Posts</button>
+				) : null }
+				{ page > 1 ? (
+					<button
+						type="button"
+						onClick={ () => props.onNewer() }
+					>Newer Posts</button>
+				) : null }
+			</div>
+		: null }
+	</div>;
+}
+const PagedBlog = withPagedArchive( posts, state => state.posts, 'blog' )( Blog );
+
+// A higher-level component controls the page.
+class App extends React.Component {
+	state = {
+		page: 1,
+	}
+
+	render() {
+		const { page } = this.state;
+		return (
+			<PagedBlog
+				page={ page }
+				onOlder={ () => this.setState( { page: page + 1 } ) }
+				onNewer={ () => this.setState( { page: page - 1 } ) }
+			/>
+		);
+	}
+}
+```
 
 ## Dynamic Archives
 

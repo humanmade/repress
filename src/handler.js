@@ -9,6 +9,7 @@ const DEFAULT_STATE = {
 	_initialized:   true,
 	archives:       {},
 	archivePages:   {},
+	archivesByPage: {},
 	loadingPost:    [],
 	loadingArchive: [],
 	loadingMore:    [],
@@ -104,7 +105,7 @@ export default class Handler {
 	 * @return {Function} Action to dispatch.
 	 */
 	// eslint-disable-next-line no-undef
-	fetchArchive = id => ( dispatch, getState ) => {
+	fetchArchive = ( id, page = null ) => ( dispatch, getState ) => {
 		if ( ! ( id in this.archives ) ) {
 			throw new Error( `Invalid archive ID: ${ id }` );
 		}
@@ -113,10 +114,21 @@ export default class Handler {
 
 		const query = this.archives[ id ];
 		const queryArgs = isFunction( query ) ? query( getState() ) : query;
+
+		// Override page if passed
+		const actualPage = Number( page || queryArgs.page || 1 );
+		queryArgs.page = actualPage;
+
 		this.fetch( this.url, queryArgs )
 			.then( results => {
 				const pages = results.__wpTotalPages || 1;
-				dispatch( { type: this.actions.archiveSuccess, id, results, pages } );
+				dispatch( {
+					type: this.actions.archiveSuccess,
+					id,
+					results,
+					page: actualPage,
+					pages,
+				} );
 				return id;
 			} )
 			.catch( error => {
@@ -171,6 +183,59 @@ export default class Handler {
 	}
 
 	/**
+	 * Get archive results from the store, restricted to a specific page.
+	 *
+	 * Retrieves the posts for a given page of an archive.
+	 *
+	 * @param {object} substate Substate registered for the type.
+	 * @param {mixed} id Archive ID.
+	 * @param {Number} page Page number.
+	 * @return {Object[]|null} List of objects for given page of the archive, or null if none loaded.
+	 */
+	getArchivePage( substate, id, page ) {
+		if ( ! substate.archivesByPage || ! substate.posts ) {
+			return null;
+		}
+
+		const pages = substate.archivesByPage[ id ];
+		if ( ! pages ) {
+			return null;
+		}
+
+		const ids = pages[ Number( page ) ];
+		if ( ! ids ) {
+			return null;
+		}
+
+		const posts = [];
+		substate.posts.forEach( post => {
+			const position = ids.indexOf( post.id );
+			if ( position === null ) {
+				return null;
+			}
+
+			posts[ position ] = post;
+		} );
+
+		return posts;
+	}
+
+	/**
+	 * Get the total number of pages for an archive.
+	 *
+	 * @param {object} substate Substate registered for the type.
+	 * @param {mixed} id Archive ID.
+	 * @return {Number|null} Number of pages in the archive if known, null otherwise.
+	 */
+	getTotalPages( substate, id ) {
+		if ( ! substate.archivePages[ id ] ) {
+			return null;
+		}
+
+		return substate.archivePages[ id ].total || 1;
+	}
+
+	/**
 	 * Are there more pages in the archive?
 	 *
 	 * Compares the currently loaded page against the total pages for
@@ -207,7 +272,7 @@ export default class Handler {
 
 		const state = getState();
 		const substate = getSubstate( state );
-		page = page || ( substate.archivePages[ id ].current || 1 ) + 1;
+		page = Number( page || ( substate.archivePages[ id ].current || 1 ) + 1 );
 
 		dispatch( { type: this.actions.archiveMoreStart, id, page } );
 
@@ -445,6 +510,7 @@ export default class Handler {
 
 			case this.actions.archiveSuccess: {
 				const ids = action.results.map( post => post.id );
+				const currentByPage = state.archivesByPage[ action.id ] || [];
 				return {
 					...state,
 					loadingArchive: state.loadingArchive.filter( a => a !== action.id ),
@@ -452,10 +518,17 @@ export default class Handler {
 						...state.archives,
 						[ action.id ]: ids,
 					},
+					archivesByPage: {
+						...state.archivesByPage,
+						[ action.id ]: {
+							...currentByPage,
+							[ action.page ]: ids,
+						},
+					},
 					archivePages: {
 						...state.archivePages,
 						[ action.id ]: {
-							current: 1,
+							current: action.page,
 							total:   action.pages,
 						},
 					},
@@ -482,6 +555,7 @@ export default class Handler {
 			case this.actions.archiveMoreSuccess: {
 				const ids = action.results.map( post => post.id );
 				const currentIds = state.archives[ action.id ] || [];
+				const currentByPage = state.archivesByPage[ action.id ] || [];
 				return {
 					...state,
 					loadingMore: state.loadingMore.filter( m => m !== action.id ),
@@ -491,6 +565,13 @@ export default class Handler {
 							...currentIds,
 							...ids,
 						],
+					},
+					archivesByPage: {
+						...state.archivesByPage,
+						[ action.id ]: {
+							...currentByPage,
+							[ action.page ]: ids,
+						},
 					},
 					archivePages: {
 						...state.archivePages,
