@@ -5,6 +5,7 @@
 Each handler's substate is an object with the following properties:
 
 * `archives`: An object containing a map from archive ID to list of object IDs.
+* `archivesByPage`: An object containing a map from page numbers to list of object IDs.
 * `posts`: A flat list of all posts objects.
 * `loadingArchive`: An array containing archive IDs currently being loaded.
 * `loadingPost`: An array containing object IDs currently being loaded.

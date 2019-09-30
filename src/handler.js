@@ -6,15 +6,16 @@ import { parseResponse, mergePosts } from './utilities';
 const fetchOptions = { credentials: 'include' };
 
 const DEFAULT_STATE = {
-	_initialized:   true,
-	archives:       {},
-	archivePages:   {},
-	loadingPost:    [],
+	_initialized: true,
+	archives: {},
+	archivePages: {},
+	archivesByPage: {},
+	loadingPost: [],
 	loadingArchive: [],
-	loadingMore:    [],
-	posts:          [],
-	saving:         [],
-	deleting:       [],
+	loadingMore: [],
+	posts: [],
+	saving: [],
+	deleting: [],
 };
 
 export default class Handler {
@@ -31,24 +32,24 @@ export default class Handler {
 
 		const upperType = options.type.toUpperCase();
 		this.actions = {
-			archiveStart:       `QUERY_${ upperType }_REQUEST`,
-			archiveSuccess:     `QUERY_${ upperType }`,
-			archiveError:       `QUERY_${ upperType }_ERROR`,
-			archiveMoreStart:   `QUERY_${ upperType }_MORE_REQUEST`,
+			archiveStart: `QUERY_${ upperType }_REQUEST`,
+			archiveSuccess: `QUERY_${ upperType }`,
+			archiveError: `QUERY_${ upperType }_ERROR`,
+			archiveMoreStart: `QUERY_${ upperType }_MORE_REQUEST`,
 			archiveMoreSuccess: `QUERY_${ upperType }_MORE`,
-			archiveMoreError:   `QUERY_${ upperType }_MORE_ERROR`,
-			getStart:           `LOAD_${ upperType }_REQUEST`,
-			getSuccess:         `LOAD_${ upperType }`,
-			getError:           `LOAD_${ upperType }_ERROR`,
-			updateStart:        `UPDATE_${ upperType }_REQUEST`,
-			updateSuccess:      `UPDATE_${ upperType }`,
-			updateError:        `UPDATE_${ upperType }_ERROR`,
-			createStart:        `CREATE_${ upperType }_REQUEST`,
-			createSuccess:      `CREATE_${ upperType }`,
-			createError:        `CREATE_${ upperType }_ERROR`,
-			deleteStart:        `DELETE_${ upperType }_REQUEST`,
-			deleteSuccess:      `DELETE_${ upperType }`,
-			deleteError:        `DELETE_${ upperType }_ERROR`,
+			archiveMoreError: `QUERY_${ upperType }_MORE_ERROR`,
+			getStart: `LOAD_${ upperType }_REQUEST`,
+			getSuccess: `LOAD_${ upperType }`,
+			getError: `LOAD_${ upperType }_ERROR`,
+			updateStart: `UPDATE_${ upperType }_REQUEST`,
+			updateSuccess: `UPDATE_${ upperType }`,
+			updateError: `UPDATE_${ upperType }_ERROR`,
+			createStart: `CREATE_${ upperType }_REQUEST`,
+			createSuccess: `CREATE_${ upperType }`,
+			createError: `CREATE_${ upperType }_ERROR`,
+			deleteStart: `DELETE_${ upperType }_REQUEST`,
+			deleteSuccess: `DELETE_${ upperType }`,
+			deleteError: `DELETE_${ upperType }_ERROR`,
 
 			// Allow overrides.
 			...( options.actions || {} ),
@@ -77,12 +78,24 @@ export default class Handler {
 			...this.query,
 			...query,
 		};
+
+		const opts = {
+			...this.fetchOptions,
+			...options,
+
+			// Manually merge headers
+			headers: {
+				...this.fetchOptions.headers,
+				...options.headers,
+			},
+		};
+
 		const fullUrl = url + '?' + qs.stringify( args );
 		if ( cacheable && this.requests[ cacheKey ] ) {
 			return this.requests[ cacheKey ];
 		}
 
-		const req = fetch( fullUrl, { ...this.fetchOptions, ...options } )
+		const req = fetch( fullUrl, opts )
 			.then( parseResponse );
 
 		if ( cacheable ) {
@@ -107,23 +120,41 @@ export default class Handler {
 	 * @return {Function} Action to dispatch.
 	 */
 	// eslint-disable-next-line no-undef
-	fetchArchive = id => ( dispatch, getState ) => {
+	fetchArchive = ( id, page = null ) => ( dispatch, getState ) => {
 		if ( ! ( id in this.archives ) ) {
 			throw new Error( `Invalid archive ID: ${ id }` );
 		}
 
-		dispatch( { type: this.actions.archiveStart, id } );
+		dispatch( {
+			type: this.actions.archiveStart,
+			id,
+		} );
 
 		const query = this.archives[ id ];
 		const queryArgs = isFunction( query ) ? query( getState() ) : query;
+
+		// Override page if passed
+		const actualPage = Number( page || queryArgs.page || 1 );
+		queryArgs.page = actualPage;
+
 		this.fetch( this.url, queryArgs )
 			.then( results => {
 				const pages = results.__wpTotalPages || 1;
-				dispatch( { type: this.actions.archiveSuccess, id, results, pages } );
+				dispatch( {
+					type: this.actions.archiveSuccess,
+					id,
+					results,
+					page: actualPage,
+					pages,
+				} );
 				return id;
 			} )
 			.catch( error => {
-				dispatch( { type: this.actions.archiveError, id, error } );
+				dispatch( {
+					type: this.actions.archiveError,
+					id,
+					error,
+				} );
 
 				// Rethrow for other promise handlers.
 				if ( this.rethrow ) {
@@ -163,6 +194,44 @@ export default class Handler {
 		const posts = [];
 		substate.posts.forEach( post => {
 			const position = ids.indexOf( post.id );
+			if ( position === -1 ) {
+				return null;
+			}
+
+			posts[ position ] = post;
+		} );
+
+		return posts;
+	}
+
+	/**
+	 * Get archive results from the store, restricted to a specific page.
+	 *
+	 * Retrieves the posts for a given page of an archive.
+	 *
+	 * @param {object} substate Substate registered for the type.
+	 * @param {mixed} id Archive ID.
+	 * @param {Number} page Page number.
+	 * @return {Object[]|null} List of objects for given page of the archive, or null if none loaded.
+	 */
+	getArchivePage( substate, id, page ) {
+		if ( ! substate.archivesByPage || ! substate.posts ) {
+			return null;
+		}
+
+		const pages = substate.archivesByPage[ id ];
+		if ( ! pages ) {
+			return null;
+		}
+
+		const ids = pages[ Number( page ) ];
+		if ( ! ids ) {
+			return null;
+		}
+
+		const posts = [];
+		substate.posts.forEach( post => {
+			const position = ids.indexOf( post.id );
 			if ( position === null ) {
 				return null;
 			}
@@ -171,6 +240,21 @@ export default class Handler {
 		} );
 
 		return posts;
+	}
+
+	/**
+	 * Get the total number of pages for an archive.
+	 *
+	 * @param {object} substate Substate registered for the type.
+	 * @param {mixed} id Archive ID.
+	 * @return {Number|null} Number of pages in the archive if known, null otherwise.
+	 */
+	getTotalPages( substate, id ) {
+		if ( ! substate.archivePages[ id ] ) {
+			return null;
+		}
+
+		return substate.archivePages[ id ].total || 1;
 	}
 
 	/**
@@ -210,9 +294,13 @@ export default class Handler {
 
 		const state = getState();
 		const substate = getSubstate( state );
-		page = page || ( substate.archivePages[ id ].current || 1 ) + 1;
+		page = Number( page || ( substate.archivePages[ id ].current || 1 ) + 1 );
 
-		dispatch( { type: this.actions.archiveMoreStart, id, page } );
+		dispatch( {
+			type: this.actions.archiveMoreStart,
+			id,
+			page,
+		} );
 
 		const query = this.archives[ id ];
 		const queryArgs = isFunction( query ) ? query( state ) : query;
@@ -221,11 +309,22 @@ export default class Handler {
 		this.fetch( this.url, queryArgs )
 			.then( results => {
 				const total = results.__wpTotalPages || 1;
-				dispatch( { type: this.actions.archiveMoreSuccess, id, page, results, total } );
+				dispatch( {
+					type: this.actions.archiveMoreSuccess,
+					id,
+					page,
+					results,
+					total,
+				} );
 				return id;
 			} )
 			.catch( error => {
-				dispatch( { type: this.actions.archiveMoreError, id, page, error } );
+				dispatch( {
+					type: this.actions.archiveMoreError,
+					id,
+					page,
+					error,
+				} );
 
 				// Rethrow for other promise handlers.
 				if ( this.rethrow ) {
@@ -254,15 +353,26 @@ export default class Handler {
 	 */
 	// eslint-disable-next-line no-undef
 	fetchSingle = ( id, context = 'view' ) => dispatch => {
-		dispatch( { type: this.actions.getStart, id } );
+		dispatch( {
+			type: this.actions.getStart,
+			id,
+		} );
 
 		return this.fetch( `${ this.url }/${ id }`, { context } )
 			.then( data => {
-				dispatch( { type: this.actions.getSuccess, id, data } );
+				dispatch( {
+					type: this.actions.getSuccess,
+					id,
+					data,
+				} );
 				return id;
 			} )
 			.catch( error => {
-				dispatch( { type: this.actions.getError, id, error } );
+				dispatch( {
+					type: this.actions.getError,
+					id,
+					error,
+				} );
 
 				// Rethrow for other promise handlers.
 				if ( this.rethrow ) {
@@ -310,20 +420,32 @@ export default class Handler {
 			throw new Error( 'Post does not have `id` property.' );
 		}
 
-		dispatch( { type: this.actions.updateStart, id, data } );
+		dispatch( {
+			type: this.actions.updateStart,
+			id,
+			data,
+		} );
 
 		const options = {
-			method:  'PUT',
+			method: 'PUT',
 			headers: { 'Content-Type': 'application/json' },
-			body:    JSON.stringify( data ),
+			body: JSON.stringify( data ),
 		};
 		return this.fetch( `${ this.url }/${ id }`, { context: 'edit' }, options )
 			.then( data => {
-				dispatch( { type: this.actions.updateSuccess, id, data } );
+				dispatch( {
+					type: this.actions.updateSuccess,
+					id,
+					data,
+				} );
 				return id;
 			} )
 			.catch( error => {
-				dispatch( { type: this.actions.updateError, id, error } );
+				dispatch( {
+					type: this.actions.updateError,
+					id,
+					error,
+				} );
 
 				// Rethrow for other promise handlers.
 				if ( this.rethrow ) {
@@ -354,20 +476,32 @@ export default class Handler {
 		// Create temporary ID to allow tracking request.
 		const id = '_tmp_' + this.tempId++;
 
-		dispatch( { type: this.actions.createStart, id, data } );
+		dispatch( {
+			type: this.actions.createStart,
+			id,
+			data,
+		} );
 
 		const options = {
-			method:  'POST',
+			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body:    JSON.stringify( data ),
+			body: JSON.stringify( data ),
 		};
 		return this.fetch( this.url, { context: 'edit' }, options )
 			.then( data => {
-				dispatch( { type: this.actions.createSuccess, id, data } );
+				dispatch( {
+					type: this.actions.createSuccess,
+					id,
+					data,
+				} );
 				return data.id;
 			} )
 			.catch( error => {
-				dispatch( { type: this.actions.createError, id, error } );
+				dispatch( {
+					type: this.actions.createError,
+					id,
+					error,
+				} );
 
 				// Rethrow for other promise handlers.
 				if ( this.rethrow ) {
@@ -393,18 +527,29 @@ export default class Handler {
 	 * @return {Function} Action to dispatch.
 	 */
 	deleteSingle = id => dispatch => {
-		dispatch( { type: this.actions.deleteStart, id } );
+		dispatch( {
+			type: this.actions.deleteStart,
+			id,
+		} );
 
 		const options = {
 			method: 'DELETE',
 		};
 		return this.fetch( `${ this.url }/${ id }`, {}, options )
 			.then( data => {
-				dispatch( { type: this.actions.deleteSuccess, id, data } );
+				dispatch( {
+					type: this.actions.deleteSuccess,
+					id,
+					data,
+				} );
 				return data.id;
 			} )
 			.catch( error => {
-				dispatch( { type: this.actions.deleteError, id, error } );
+				dispatch( {
+					type: this.actions.deleteError,
+					id,
+					error,
+				} );
 
 				// Rethrow for other promise handlers.
 				if ( this.rethrow ) {
@@ -448,18 +593,26 @@ export default class Handler {
 
 			case this.actions.archiveSuccess: {
 				const ids = action.results.map( post => post.id );
+				const currentByPage = state.archivesByPage[ action.id ] || [];
 				return {
 					...state,
 					loadingArchive: state.loadingArchive.filter( a => a !== action.id ),
-					archives:       {
+					archives: {
 						...state.archives,
 						[ action.id ]: ids,
+					},
+					archivesByPage: {
+						...state.archivesByPage,
+						[ action.id ]: {
+							...currentByPage,
+							[ action.page ]: ids,
+						},
 					},
 					archivePages: {
 						...state.archivePages,
 						[ action.id ]: {
-							current: 1,
-							total:   action.pages,
+							current: action.page,
+							total: action.pages,
 						},
 					},
 					posts: mergePosts( state.posts, action.results ),
@@ -485,21 +638,29 @@ export default class Handler {
 			case this.actions.archiveMoreSuccess: {
 				const ids = action.results.map( post => post.id );
 				const currentIds = state.archives[ action.id ] || [];
+				const currentByPage = state.archivesByPage[ action.id ] || [];
 				return {
 					...state,
 					loadingMore: state.loadingMore.filter( m => m !== action.id ),
-					archives:    {
+					archives: {
 						...state.archives,
 						[ action.id ]: [
 							...currentIds,
 							...ids,
 						],
 					},
+					archivesByPage: {
+						...state.archivesByPage,
+						[ action.id ]: {
+							...currentByPage,
+							[ action.page ]: ids,
+						},
+					},
 					archivePages: {
 						...state.archivePages,
 						[ action.id ]: {
 							current: action.page,
-							total:   action.total,
+							total: action.total,
 						},
 					},
 					posts: mergePosts( state.posts, action.results ),
@@ -526,7 +687,7 @@ export default class Handler {
 				return {
 					...state,
 					loadingPost: state.loadingPost.filter( p => p !== action.id ),
-					posts:       mergePosts( state.posts, [ action.data ] ),
+					posts: mergePosts( state.posts, [ action.data ] ),
 				};
 			}
 
@@ -551,7 +712,7 @@ export default class Handler {
 				return {
 					...state,
 					saving: state.saving.filter( p => p !== action.id ),
-					posts:  mergePosts( state.posts, [ action.data ] ),
+					posts: mergePosts( state.posts, [ action.data ] ),
 				};
 
 			case this.actions.createError:

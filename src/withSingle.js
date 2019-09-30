@@ -8,15 +8,15 @@ export default ( handler, getSubstate, mapPropsToId, options = {} ) => Component
 	const mapActionsToProps = options.mapActionsToProps || ( actions => actions );
 
 	class WrappedComponent extends React.Component {
-		componentWillMount() {
-			if ( ! this.props._data.posts && ! this.props._data.loading ) {
+		componentDidMount() {
+			if ( ! this.props._data.post && ! this.props._data.loading ) {
 				this.props._actions.onLoad();
 			}
 		}
 
-		componentWillReceiveProps( nextProps ) {
-			if ( ! nextProps._data.posts && this.props._data.postId !== nextProps._data.postId ) {
-				nextProps._actions.onLoad();
+		componentDidUpdate( prevProps ) {
+			if ( ! this.props._data.post && prevProps._data.postId !== this.props._data.postId ) {
+				this.props._actions.onLoad();
 			}
 		}
 
@@ -40,9 +40,9 @@ export default ( handler, getSubstate, mapPropsToId, options = {} ) => Component
 		return {
 			_data: {
 				post,
-				postId:  resolvedId,
+				postId: resolvedId,
 				loading: handler.isPostLoading( substate, resolvedId ),
-				saving:  handler.isPostSaving( substate, resolvedId ),
+				saving: handler.isPostSaving( substate, resolvedId ),
 			},
 		};
 	};
@@ -51,8 +51,11 @@ export default ( handler, getSubstate, mapPropsToId, options = {} ) => Component
 		const resolvedId = resolve( mapPropsToId, props );
 		return {
 			_actions: {
-				onLoad:       ( context = 'view' ) => dispatch( handler.fetchSingle( resolvedId, context ) ),
-				onUpdatePost: data => dispatch( handler.updateSingle( { id: resolvedId, ...data } ) ),
+				onLoad: ( context = 'view' ) => dispatch( handler.fetchSingle( resolvedId, context ) ),
+				onUpdatePost: data => dispatch( handler.updateSingle( {
+					id: resolvedId,
+					...data,
+				} ) ),
 			},
 		};
 	};
