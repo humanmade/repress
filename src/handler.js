@@ -68,7 +68,10 @@ export default class Handler {
 	 *   which receives the state and should return parameters.
 	 */
 	registerArchive( id, query, optimizer ) {
-		this.archives[ id ] = { query, optimizer };
+		this.archives[ id ] = {
+			query,
+			optimizer,
+		};
 	}
 
 	fetch( url, query, options = {} ) {
