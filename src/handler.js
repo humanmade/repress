@@ -64,10 +64,11 @@ export default class Handler {
 	 *
 	 * @param {mixed} id Archive key; any scalar.
 	 * @param {Object|Function} query Query parameters. Can be a function,
+	 * @param {Function} optimizer Optimizer to look up posts from exists data based off the query.
 	 *   which receives the state and should return parameters.
 	 */
-	registerArchive( id, query ) {
-		this.archives[ id ] = query;
+	registerArchive( id, query, optimizer ) {
+		this.archives[ id ] = { query, optimizer };
 	}
 
 	fetch( url, query, options = {} ) {
@@ -130,7 +131,7 @@ export default class Handler {
 			id,
 		} );
 
-		const query = this.archives[ id ];
+		const query = this.archives[ id ].query;
 		const queryArgs = isFunction( query ) ? query( getState() ) : query;
 
 		// Override page if passed
@@ -186,9 +187,14 @@ export default class Handler {
 			return null;
 		}
 
-		const ids = substate.archives[ id ];
+		let ids = substate.archives[ id ];
 		if ( ! ids ) {
-			return null;
+			if ( this.archives[ id ].optimizer ) {
+				ids = this.archives[ id ].optimizer( substate.posts );
+			}
+			if ( ! ids ) {
+				return null;
+			}
 		}
 
 		const posts = [];
@@ -220,11 +226,21 @@ export default class Handler {
 		}
 
 		const pages = substate.archivesByPage[ id ];
+		let ids = null;
+
 		if ( ! pages ) {
-			return null;
+			if ( this.archives[ id ].optimizer ) {
+				ids = this.archives[ id ].optimizer( substate.posts );
+			}
+			if ( ! ids ) {
+				return null;
+			}
 		}
 
-		const ids = pages[ Number( page ) ];
+		if ( ! ids ) {
+			ids = pages[ Number( page ) ];
+		}
+
 		if ( ! ids ) {
 			return null;
 		}
@@ -302,7 +318,7 @@ export default class Handler {
 			page,
 		} );
 
-		const query = this.archives[ id ];
+		const query = this.archives[ id ].query
 		const queryArgs = isFunction( query ) ? query( state ) : query;
 		queryArgs.page = page;
 
