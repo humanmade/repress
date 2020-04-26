@@ -29,7 +29,7 @@ function useSingle( handler, getSubstate, id ) {
 			return;
 		}
 
-		data.onLoad();
+		data.load();
 	}, [ id, state.loading, state.post ] );
 
 	return data;
