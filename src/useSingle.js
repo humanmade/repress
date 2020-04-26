@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { maybeHook } from './internal-utilities';
+
 function useSingle( handler, getSubstate, id ) {
 	const state = useSelector( state => {
 		const substate = getSubstate( state );
@@ -33,4 +35,4 @@ function useSingle( handler, getSubstate, id ) {
 	return data;
 }
 
-export default useSingle;
+export default maybeHook( useSingle );
