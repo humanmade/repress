@@ -56,6 +56,7 @@ export default class Handler {
 		};
 
 		this.tempId = 0;
+		this.requests = {};
 	}
 
 	/**
@@ -70,6 +71,9 @@ export default class Handler {
 	}
 
 	fetch( url, query, options = {} ) {
+		const cacheKey = url + '?' + qs.stringify( query ) + '!' + JSON.stringify( options );
+		const cacheable = ! options.method || options.method === 'GET' || options.method === 'HEAD';
+
 		const args = {
 			...this.query,
 			...query,
@@ -87,8 +91,19 @@ export default class Handler {
 		};
 
 		const fullUrl = url + '?' + qs.stringify( args );
-		return fetch( fullUrl, opts )
+		if ( cacheable && this.requests[ cacheKey ] ) {
+			return this.requests[ cacheKey ];
+		}
+
+		const req = fetch( fullUrl, opts )
 			.then( parseResponse );
+
+		if ( cacheable ) {
+			this.requests[ cacheKey ] = req;
+			this.requests[ cacheKey ].then( () => delete this.requests[ cacheKey ] );
+			this.requests[ cacheKey ].catch( () => delete this.requests[ cacheKey ] );
+		}
+		return req;
 	}
 
 	/**
