@@ -114,6 +114,26 @@ export default withSingle(
 // Then just use <Post id={ 42 } /> !
 ```
 
+Alternatively, implement it with hooks (requires react-redux 7.1+):
+
+```js
+// Post.js
+import { useSingle } from '@humanmade/repress';
+import React from 'react';
+
+import { posts } from './types';
+
+const Post = props => {
+	const postData = useSingle( posts, state => state.posts, props.id );
+
+	return (
+		<div>
+			<h1>{ postData.post.title.rendered }</h1>
+		</div>
+	);
+}
+```
+
 
 ## About
 
