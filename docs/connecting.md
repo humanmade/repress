@@ -66,6 +66,50 @@ You can pass a fourth parameter called `options` to `withSingle`. This is an obj
 * `mapActionsToProps` (`Function`: `object => object`): Map the action props to props to your component. By default, this passes through all action props.
 
 
+## Hooks
+
+If you're using [React Hooks](https://reactjs.org/docs/hooks-reference.html), you can use the `useSingle` hook instead:
+
+```js
+// SinglePost.js
+import { useSingle } from '@humanmade/repress';
+import React from 'react';
+
+import { posts } from './types';
+
+export default function SinglePost( props ) {
+	const { post } = useSingle(
+		// Handler object:
+		posts,
+
+		// getSubstate() - returns the substate
+		state => state.posts,
+
+		// Post ID.
+		props.id
+	);
+
+	return (
+		<article>
+			<h1>{ props.post.title.rendered }</h1>
+			<p>Posted { props.post.date_gmt }</p>
+			<div
+				dangerouslySetInnerHTML={ { __html: props.post.content.rendered } }
+			/>
+		</article>
+	);
+}
+```
+
+The `useSingle` hook will automatically load the post if it's not available in the store. The hook returns receives four data props, and two action props:
+
+* `post` (`object`): The post object.
+* `loading` (`boolean`): Whether the post is currently being loaded.
+* `saving` (`boolean`): Whether the post is currently being updated.
+* `load` (`Function`: `(context = 'view') => Promise`): Loader function. Called automatically by the hook, but you can call this again if needed. (When calling manually, you can also pass the context to fetch.)
+* `update` (`Function`: `data => Promise`): Update the post. Takes the data to send to the backend (`id` is added automatically.)
+
+
 ## Manually Connect
 
 If you're already connecting your component to the state, or want to manage the loading yourself, you can instead use the helper methods on the handler:
