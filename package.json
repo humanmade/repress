@@ -8,7 +8,7 @@
 	"license": "ISC",
 	"peerDependencies": {
 		"react": ">= 15",
-		"react-redux": "4.x || 5.x",
+		"react-redux": "4.x || 5.x || 6.x || 7.x",
 		"redux": "3.x",
 		"redux-thunk": "2.x"
 	},
