@@ -6,6 +6,15 @@ import { maybeHook } from './internal-utilities';
 function usePagedArchive( handler, getSubstate, id, page ) {
 	const state = useSelector( state => {
 		const substate = getSubstate( state );
+		if ( ! id ) {
+			return {
+				posts: null,
+				loading: false,
+				hasMore: false,
+				loadingMore: false,
+			};
+		}
+
 		const totalPages = handler.getTotalPages( substate, id );
 
 		return {
@@ -25,7 +34,7 @@ function usePagedArchive( handler, getSubstate, id, page ) {
 	};
 
 	useEffect( () => {
-		if ( state.posts || state.loading ) {
+		if ( state.posts || state.loading || ! id ) {
 			return;
 		}
 

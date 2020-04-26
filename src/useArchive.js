@@ -6,6 +6,15 @@ import { maybeHook } from './internal-utilities';
 function useArchive( handler, getSubstate, id ) {
 	const state = useSelector( state => {
 		const substate = getSubstate( state );
+		if ( ! id ) {
+			return {
+				posts: null,
+				loading: false,
+				hasMore: false,
+				loadingMore: false,
+			};
+		}
+
 		const posts = handler.getArchive( substate, id );
 
 		return {
@@ -23,7 +32,7 @@ function useArchive( handler, getSubstate, id ) {
 	};
 
 	useEffect( () => {
-		if ( state.posts || state.loading ) {
+		if ( state.posts || state.loading || ! id ) {
 			return;
 		}
 

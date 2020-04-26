@@ -7,6 +7,14 @@ function useSingle( handler, getSubstate, id ) {
 	const state = useSelector( state => {
 		const substate = getSubstate( state );
 
+		if ( ! id ) {
+			return {
+				post: null,
+				loading: false,
+				saving: false,
+			};
+		}
+
 		return {
 			post: handler.getSingle( substate, id ),
 			loading: handler.isPostLoading( substate, id ),
@@ -25,7 +33,7 @@ function useSingle( handler, getSubstate, id ) {
 	};
 
 	useEffect( () => {
-		if ( state.post || state.loading ) {
+		if ( state.post || state.loading || ! id ) {
 			return;
 		}
 
