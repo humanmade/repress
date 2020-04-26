@@ -9,6 +9,7 @@
 The following topics aren't needed for most people, but are handy if you're working on advanced use cases.
 
 * [Actions](actions.md)
+* [Hooks vs HOCs](hooks-hocs.md)
 * [Internals](internals.md)
 * [Hydration](hydration.md)
 * [Advanced Uses](advanced.md) - Custom reducers and altering the internal state.
