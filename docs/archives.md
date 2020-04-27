@@ -103,6 +103,50 @@ You can pass a fourth parameter called `options` to `withArchive`. This is an ob
 * `mapActionsToProps` (`Function`: `object => object`): Map the action props to props to your component. By default, this passes through all action props.
 
 
+## useArchive
+
+You can alternatively use the `useArchive` hook to access your data in your components:
+
+```js
+// TodayArchive.js
+import { useArchive } from '@humanmade/repress';
+import React from 'react';
+
+import { posts } from './types';
+
+export default function TodayArchive( props ) {
+	const archive = withArchive(
+		// Handler object:
+		posts,
+
+		// getSubstate() - returns the substate
+		state => state.posts,
+
+		// Archive ID
+		'today'
+	);
+	return (
+		<ul>
+			{ archive.posts.map( post =>
+				<li key={ post.id }>
+					{ post.title.rendered }
+				</li>
+			) }
+		</ul>
+	);
+}
+```
+
+The `useArchive` hook will automatically load the archive if it's not available in the store. The hook returns four data props, and two action props:
+
+* `posts` (`object[]`): A list of objects in the archive.
+* `loading` (`boolean`): Whether the archive is currently being loaded.
+* `hasMore` (`boolean`): Whether there are more pages of the archive to load.
+* `loadingMore` (`boolean`): Whether the next page of the archive is being loaded.
+* `load` (`Function`: `() => Promise`): Loader function. Called automatically by the HOC, but you can call this again if needed.
+* `loadMore` (`Function`: `( page = null ) => Promise`): Loader function. Call this to load the next page of the archive, or pass a page number to load that specific page.
+
+
 ## Pagination
 
 Pagination support for archives is included out of the box. You can use either infinite scroll style ("more-style") or manual pagination.
@@ -152,6 +196,43 @@ function Blog( props ) {
 	</div>;
 }
 export default withArchive( posts, state => state.posts, 'blog' )( Blog );
+```
+
+Or, with hooks:
+
+```js
+export default function Blog( props ) {
+	const archive = useArchive( posts, state => state.posts, 'blog' );
+
+	if ( archive.loading ) {
+		return <div>Loading…</div>;
+	}
+
+	if ( ! archive.posts ) {
+		return <div>No posts</div>;
+	}
+
+	return (
+		<div>
+			<ol>
+				{ posts.map( post => (
+					<li key={ post.id }>{ post.title.rendered }</li>
+				) ) }
+			</ol>
+
+			{ archive.loadingMore ? (
+				<p>Loading more…</p>
+			) : archive.hasMore ? (
+				<button
+					type="button"
+					onClick={ () => archive.loadMore() }
+				>
+					Load More
+				</button>
+			) : null }
+		</div>
+	);
+}
 ```
 
 
@@ -232,6 +313,66 @@ class App extends React.Component {
 	}
 }
 ```
+
+### Manual Pagination with Hooks
+
+This manual pagination style can be condensed into a single component by using hooks instead.
+
+Just like the `useArchive` hook, there's also a `usePagedArchive` hook. This hook returns the same props as `useArchive`, with the following differences:
+
+* `posts` (`object[]`): A list of objects on the given page of the archive.
+* `totalPages` (`Number`): Total number of pages available for the archive.
+
+The `usePagedArchive` hook automatically calls `loadMore` for you when the page changes. You can use `hasMore` to determine whether to show navigation to the next page, and you can check `page > 1` to determine whether to show navigation to the previous page.
+
+```js
+function Blog( props ) {
+	const [ page, setPage ] = useState( 1 );
+	const archive = withPagedArchive( posts, state => state.posts, 'blog', page );
+
+	if ( archive.loading ) {
+		return <div>Loading…</div>;
+	}
+
+	if ( ! archive.posts ) {
+		return <div>No posts</div>;
+	}
+
+	return (
+		<div>
+			<ol>
+				{ posts.map( post => (
+					<li key={ post.id }>{ post.title.rendered }</li>
+				) ) }
+			</ol>
+
+			{ archive.loadingMore ? (
+				<p>Loading more…</p>
+			) : (
+				<div>
+					{ archive.hasMore ? (
+						<button
+							type="button"
+							onClick={ () => setPage( page + 1 ) }
+						>
+							Older Posts
+						</button>
+					) : null }
+					{ page > 1 ? (
+						<button
+							type="button"
+							onClick={ () => setPage( page - 1 ) }
+						>
+							Newer Posts
+						</button>
+					) : null }
+				</div>
+			: null }
+		</div>
+	);
+}
+```
+
 
 ## Dynamic Archives
 
