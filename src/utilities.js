@@ -1,4 +1,4 @@
-import { isFunction } from 'lodash/lang';
+import isFunction from 'lodash/isFunction';
 
 export const resolve = ( maybeFunc, ...args ) => isFunction( maybeFunc ) ? maybeFunc( ...args ) : maybeFunc;
 

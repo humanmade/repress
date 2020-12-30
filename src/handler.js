@@ -1,4 +1,4 @@
-import { isFunction } from 'lodash/lang';
+import isFunction from 'lodash/isFunction';
 import qs from 'qs';
 
 import { parseResponse, mergePosts } from './utilities';

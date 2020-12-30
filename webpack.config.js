@@ -24,6 +24,8 @@ module.exports = {
 		],
 	},
 	externals: {
+		'lodash': 'commonjs lodash',
+		'qs': 'commonjs qs',
 		'react': 'commonjs react',
 		'react-redux': 'commonjs react-redux',
 	},
